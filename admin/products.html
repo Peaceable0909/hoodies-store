@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Products — HOODIES Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-brand"><span>HOODIES</span><p>Admin Portal</p></div>
+    <nav class="admin-nav">
+      <a href="index.html"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="orders.html"><span class="nav-icon">📦</span> Orders</a>
+      <a href="products.html" class="active"><span class="nav-icon">👕</span> Products</a>
+      <a href="#" onclick="logout()"><span class="nav-icon">🚪</span> Sign Out</a>
+    </nav>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <h1>Products</h1>
+      <div style="display:flex;gap:0.8rem">
+        <button class="btn-admin" onclick="openForm(null)">+ Add New Product</button>
+        <button class="btn-admin-sm" onclick="seedProducts()" id="seed-btn">Seed Default Products</button>
+      </div>
+    </div>
+
+    <!-- PRODUCT TABLE -->
+    <div class="admin-card" id="product-list-card">
+      <div class="admin-card-header">
+        <h2>All Products</h2>
+        <span id="prod-count" style="font-size:0.78rem;color:var(--gray)"></span>
+      </div>
+      <div id="products-wrap">
+        <div class="loading-state"><div class="loading-spinner"></div><p>Loading products...</p></div>
+      </div>
+    </div>
+
+    <!-- ADD/EDIT FORM (hidden by default) -->
+    <div class="admin-card" id="product-form-card" style="display:none">
+      <div class="admin-card-header">
+        <h2 id="form-title">Add New Product</h2>
+        <button class="btn-admin-sm" onclick="closeForm()">✕ Cancel</button>
+      </div>
+      <div class="product-form">
+        <input type="hidden" id="edit-id"/>
+
+        <div>
+          <label class="form-label">PRODUCT NAME *</label>
+          <input type="text" id="f-name" class="admin-input" placeholder="e.g. Signature Custom Hoodie"/>
+        </div>
+
+        <div>
+          <label class="form-label">CATEGORY *</label>
+          <select id="f-category" class="admin-select">
+            <option value="hoodies">Hoodies</option>
+            <option value="polos">Polos</option>
+            <option value="tracksuits">Tracksuits</option>
+            <option value="caps">Caps</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="form-label">PRICE (NGN) *</label>
+          <input type="number" id="f-price" class="admin-input" placeholder="e.g. 15000"/>
+        </div>
+
+        <div>
+          <label class="form-label">EMOJI ICON *</label>
+          <input type="text" id="f-emoji" class="admin-input" placeholder="e.g. 🧥" maxlength="4"/>
+        </div>
+
+        <div class="full">
+          <label class="form-label">DESCRIPTION *</label>
+          <textarea id="f-desc" class="admin-input" rows="3" placeholder="Product description..."></textarea>
+        </div>
+
+        <div class="full">
+          <label class="form-label">COLORS (hex codes, comma-separated)</label>
+          <input type="text" id="f-colors" class="admin-input" placeholder="#1a1a1a, #2563eb, #c0392b, #27ae60"/>
+          <p style="font-size:0.7rem;color:var(--gray);margin-top:0.3rem">Enter hex color codes separated by commas. First color is the default.</p>
+        </div>
+
+        <div class="full">
+          <label class="form-label">SIZES (comma-separated)</label>
+          <input type="text" id="f-sizes" class="admin-input" placeholder="S, M, L, XL, XXL"/>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:1rem">
+          <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;cursor:pointer">
+            <input type="checkbox" id="f-active" checked style="width:16px;height:16px"/>
+            Active (visible in store)
+          </label>
+          <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;cursor:pointer">
+            <input type="checkbox" id="f-featured" style="width:16px;height:16px"/>
+            Featured (shown on homepage)
+          </label>
+        </div>
+
+        <div class="full">
+          <div id="form-error-prod" style="color:#c0392b;font-size:0.78rem;margin-bottom:0.5rem;display:none"></div>
+          <button class="btn-admin" onclick="saveProduct()" id="save-btn">Save Product</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/db.js"></script>
+<script>
+  if (sessionStorage.getItem('hka_admin') !== 'true') { window.location.href = 'login.html'; }
+  function logout() { sessionStorage.clear(); window.location.href = 'login.html'; }
+
+  let products = [];
+
+  async function loadProducts() {
+    // Load ALL products including inactive for admin view
+    const sb = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+    const { data } = await sb.from('products').select('*').order('created_at', { ascending: false });
+    products = data || [];
+    document.getElementById('prod-count').textContent = products.length + ' products';
+    renderProductTable();
+  }
+
+  function renderProductTable() {
+    const wrap = document.getElementById('products-wrap');
+    if (!products.length) {
+      wrap.innerHTML = '<p style="padding:2rem;text-align:center;color:var(--gray);font-size:0.82rem">No products yet. Click "Add New Product" or "Seed Default Products" to start.</p>';
+      return;
+    }
+
+    wrap.innerHTML = `
+      <table class="admin-table">
+        <thead><tr>
+          <th>Product</th><th>Category</th><th>Price</th>
+          <th>Colors</th><th>Sizes</th><th>Status</th><th>Actions</th>
+        </tr></thead>
+        <tbody>
+          ${products.map((p, i) => {
+            const colors = typeof p.colors === 'string' ? JSON.parse(p.colors) : (p.colors || []);
+            const sizes = typeof p.sizes === 'string' ? JSON.parse(p.sizes) : (p.sizes || []);
+            return `<tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:0.8rem">
+                  <span style="font-size:1.8rem">${p.emoji}</span>
+                  <div>
+                    <strong style="font-size:0.85rem">${p.name}</strong>
+                    ${p.featured ? '<br><span style="font-size:0.65rem;color:var(--blue);font-weight:700;letter-spacing:1px">FEATURED</span>' : ''}
+                  </div>
+                </div>
+              </td>
+              <td style="font-size:0.78rem;text-transform:capitalize">${p.category}</td>
+              <td><strong>₦${(p.price_ngn||0).toLocaleString()}</strong></td>
+              <td>
+                <div style="display:flex;gap:0.3rem;flex-wrap:wrap">
+                  ${colors.slice(0,6).map(c => `<span style="width:16px;height:16px;border-radius:50%;background:${c};border:1px solid rgba(0,0,0,0.15);display:inline-block" title="${c}"></span>`).join('')}
+                  ${colors.length > 6 ? `<span style="font-size:0.65rem;color:var(--gray)">+${colors.length-6}</span>` : ''}
+                </div>
+              </td>
+              <td style="font-size:0.75rem;color:var(--gray)">${sizes.join(', ')}</td>
+              <td>
+                <span style="display:inline-block;padding:0.2rem 0.5rem;font-size:0.65rem;font-weight:700;letter-spacing:1px;background:${p.active?'#d1fae5':'#fee2e2'};color:${p.active?'#065f46':'#991b1b'}">
+                  ${p.active ? 'ACTIVE' : 'HIDDEN'}
+                </span>
+              </td>
+              <td style="display:flex;gap:0.4rem;flex-wrap:wrap">
+                <button class="btn-admin-sm" onclick="openForm(${i})">Edit</button>
+                <button class="btn-danger-sm" onclick="deleteProduct('${p.id}','${p.name}')">Delete</button>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+  }
+
+  function openForm(index) {
+    document.getElementById('product-form-card').style.display = 'block';
+    document.getElementById('product-form-card').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('form-error-prod').style.display = 'none';
+
+    if (index === null) {
+      // New product
+      document.getElementById('form-title').textContent = 'Add New Product';
+      document.getElementById('edit-id').value = '';
+      document.getElementById('f-name').value = '';
+      document.getElementById('f-category').value = 'hoodies';
+      document.getElementById('f-price').value = '';
+      document.getElementById('f-emoji').value = '🧥';
+      document.getElementById('f-desc').value = '';
+      document.getElementById('f-colors').value = '#1a1a1a, #2563eb, #c0392b, #27ae60';
+      document.getElementById('f-sizes').value = 'S, M, L, XL, XXL';
+      document.getElementById('f-active').checked = true;
+      document.getElementById('f-featured').checked = false;
+    } else {
+      // Edit existing
+      const p = products[index];
+      const colors = typeof p.colors === 'string' ? JSON.parse(p.colors) : (p.colors || []);
+      const sizes = typeof p.sizes === 'string' ? JSON.parse(p.sizes) : (p.sizes || []);
+      document.getElementById('form-title').textContent = 'Edit Product';
+      document.getElementById('edit-id').value = p.id;
+      document.getElementById('f-name').value = p.name || '';
+      document.getElementById('f-category').value = p.category || 'hoodies';
+      document.getElementById('f-price').value = p.price_ngn || '';
+      document.getElementById('f-emoji').value = p.emoji || '🧥';
+      document.getElementById('f-desc').value = p.description || '';
+      document.getElementById('f-colors').value = colors.join(', ');
+      document.getElementById('f-sizes').value = sizes.join(', ');
+      document.getElementById('f-active').checked = !!p.active;
+      document.getElementById('f-featured').checked = !!p.featured;
+    }
+  }
+
+  function closeForm() {
+    document.getElementById('product-form-card').style.display = 'none';
+  }
+
+  async function saveProduct() {
+    const errorEl = document.getElementById('form-error-prod');
+    const name = document.getElementById('f-name').value.trim();
+    const price = parseInt(document.getElementById('f-price').value);
+    const desc = document.getElementById('f-desc').value.trim();
+
+    if (!name || !price || !desc) {
+      errorEl.textContent = 'Name, price, and description are required.';
+      errorEl.style.display = 'block'; return;
+    }
+    if (isNaN(price) || price < 0) {
+      errorEl.textContent = 'Please enter a valid price in NGN.';
+      errorEl.style.display = 'block'; return;
+    }
+
+    errorEl.style.display = 'none';
+    const btn = document.getElementById('save-btn');
+    btn.textContent = 'Saving...'; btn.disabled = true;
+
+    const colorsRaw = document.getElementById('f-colors').value;
+    const sizesRaw = document.getElementById('f-sizes').value;
+    const colors = colorsRaw.split(',').map(s => s.trim()).filter(Boolean);
+    const sizes = sizesRaw.split(',').map(s => s.trim()).filter(Boolean);
+
+    const product = {
+      name,
+      category: document.getElementById('f-category').value,
+      price_ngn: price,
+      emoji: document.getElementById('f-emoji').value.trim() || '🧥',
+      description: desc,
+      colors: JSON.stringify(colors),
+      sizes: JSON.stringify(sizes),
+      active: document.getElementById('f-active').checked,
+      featured: document.getElementById('f-featured').checked
+    };
+
+    const editId = document.getElementById('edit-id').value;
+    if (editId) product.id = editId;
+
+    try {
+      await dbSaveProduct(product);
+      closeForm();
+      await loadProducts();
+      showAdminToast(editId ? 'Product updated!' : 'Product added!');
+    } catch(e) {
+      errorEl.textContent = 'Save failed: ' + (e.message || 'Unknown error');
+      errorEl.style.display = 'block';
+    } finally {
+      btn.textContent = 'Save Product'; btn.disabled = false;
+    }
+  }
+
+  async function deleteProduct(id, name) {
+    if (!confirm(`Delete "${name}"?\n\nThis hides it from your store. It can be re-activated later.`)) return;
+    try {
+      await dbDeleteProduct(id);
+      await loadProducts();
+      showAdminToast('Product hidden from store.');
+    } catch(e) {
+      alert('Delete failed: ' + e.message);
+    }
+  }
+
+  async function seedProducts() {
+    if (!confirm('This will add the default HOODIES product catalog to your store. Continue?')) return;
+    document.getElementById('seed-btn').textContent = 'Seeding...';
+    try {
+      await dbSeedProducts();
+      await loadProducts();
+      showAdminToast('Default products added!');
+    } catch(e) {
+      alert('Seed failed: ' + e.message);
+    } finally {
+      document.getElementById('seed-btn').textContent = 'Seed Default Products';
+    }
+  }
+
+  function showAdminToast(msg) {
+    const t = document.createElement('div');
+    t.textContent = msg;
+    t.style.cssText = 'position:fixed;bottom:2rem;right:2rem;background:#0e0e0e;color:white;padding:0.8rem 1.5rem;font-size:0.78rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;z-index:9999;animation:fadeIn 0.3s forwards';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2500);
+  }
+
+  loadProducts();
+</script>
+</body>
+</html>
