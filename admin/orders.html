@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Orders — HOODIES Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-brand"><span>HOODIES</span><p>Admin Portal</p></div>
+    <nav class="admin-nav">
+      <a href="index.html"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="orders.html" class="active"><span class="nav-icon">📦</span> Orders</a>
+      <a href="products.html"><span class="nav-icon">👕</span> Products</a>
+      <a href="#" onclick="logout()"><span class="nav-icon">🚪</span> Sign Out</a>
+    </nav>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <h1>Orders</h1>
+      <div style="display:flex;gap:0.8rem">
+        <select id="status-filter" class="admin-select" style="width:auto" onchange="filterOrders()">
+          <option value="all">All Status</option>
+          <option value="paid">Paid</option>
+          <option value="processing">Processing</option>
+          <option value="shipped">Shipped</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h2>All Orders</h2>
+        <span id="order-count" style="font-size:0.78rem;color:var(--gray)"></span>
+      </div>
+      <div id="orders-wrap">
+        <div class="loading-state"><div class="loading-spinner"></div><p>Loading orders...</p></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ORDER DETAIL MODAL -->
+<div class="order-detail-modal" id="order-modal" style="display:none">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2 id="modal-title">Order Details</h2>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/db.js"></script>
+<script>
+  if (sessionStorage.getItem('hka_admin') !== 'true') { window.location.href = 'login.html'; }
+  function logout() { sessionStorage.clear(); window.location.href = 'login.html'; }
+
+  let allOrders = [];
+
+  async function loadOrders() {
+    allOrders = await dbGetOrders();
+    filterOrders();
+  }
+
+  function filterOrders() {
+    const status = document.getElementById('status-filter').value;
+    const filtered = status === 'all' ? allOrders : allOrders.filter(o => o.status === status);
+    document.getElementById('order-count').textContent = filtered.length + ' orders';
+    renderOrders(filtered);
+  }
+
+  function renderOrders(orders) {
+    const wrap = document.getElementById('orders-wrap');
+    if (!orders.length) {
+      wrap.innerHTML = '<p style="padding:2rem;text-align:center;color:var(--gray);font-size:0.82rem">No orders found.</p>';
+      return;
+    }
+
+    wrap.innerHTML = `
+      <table class="admin-table">
+        <thead><tr>
+          <th>Reference</th><th>Customer</th><th>Phone</th>
+          <th>Items</th><th>Total</th><th>Status</th>
+          <th>Date</th><th>Actions</th>
+        </tr></thead>
+        <tbody>
+          ${orders.map((o, i) => {
+            const items = Array.isArray(o.items) ? o.items : [];
+            return `<tr>
+              <td><code style="font-size:0.7rem">${o.reference || '—'}</code></td>
+              <td>
+                <strong style="font-size:0.82rem">${o.customer_name || '—'}</strong><br>
+                <span style="font-size:0.7rem;color:var(--gray)">${o.customer_email || ''}</span>
+              </td>
+              <td style="font-size:0.78rem">${o.customer_phone || '—'}</td>
+              <td style="font-size:0.75rem;color:var(--gray);max-width:160px">
+                ${items.map(item => `${item.name} (${item.size}) ×${item.qty}`).join('<br>')}
+              </td>
+              <td><strong>₦${(o.total_ngn||0).toLocaleString()}</strong></td>
+              <td>
+                <select class="admin-select" style="width:auto;font-size:0.72rem;padding:0.3rem 0.5rem"
+                  onchange="updateStatus('${o.id}', this.value)">
+                  <option value="paid" ${o.status==='paid'?'selected':''}>Paid</option>
+                  <option value="processing" ${o.status==='processing'?'selected':''}>Processing</option>
+                  <option value="shipped" ${o.status==='shipped'?'selected':''}>Shipped</option>
+                  <option value="cancelled" ${o.status==='cancelled'?'selected':''}>Cancelled</option>
+                </select>
+              </td>
+              <td style="font-size:0.72rem;color:var(--gray)">${o.created_at ? new Date(o.created_at).toLocaleDateString('en-NG', {day:'numeric',month:'short',year:'numeric'}) : '—'}</td>
+              <td style="display:flex;gap:0.4rem;flex-wrap:wrap">
+                <button class="btn-admin-sm" onclick="viewOrder(${i})">Details</button>
+                <a href="https://wa.me/${o.customer_phone ? o.customer_phone.replace(/\D/g,'') : ''}" target="_blank" class="btn-admin-sm">WhatsApp</a>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+  }
+
+  async function updateStatus(id, status) {
+    try {
+      await dbUpdateOrderStatus(id, status);
+      const order = allOrders.find(o => o.id === id);
+      if (order) order.status = status;
+      // Show feedback
+      const toast = document.createElement('div');
+      toast.textContent = 'Status updated to ' + status;
+      toast.style.cssText = 'position:fixed;bottom:2rem;right:2rem;background:var(--black);color:white;padding:0.8rem 1.2rem;font-size:0.78rem;z-index:9999';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    } catch(e) {
+      alert('Failed to update status: ' + e.message);
+    }
+  }
+
+  let currentOrders = [];
+  function viewOrder(i) {
+    const filtered = document.getElementById('status-filter').value === 'all' ? allOrders : allOrders.filter(o => o.status === document.getElementById('status-filter').value);
+    currentOrders = filtered;
+    const o = filtered[i];
+    if (!o) return;
+    const items = Array.isArray(o.items) ? o.items : [];
+
+    document.getElementById('modal-title').textContent = 'Order: ' + (o.reference || o.id);
+    document.getElementById('modal-body').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
+        <div><p style="font-size:0.65rem;letter-spacing:2px;color:var(--gray);margin-bottom:0.3rem">CUSTOMER</p><strong>${o.customer_name}</strong><br><span style="font-size:0.78rem;color:var(--gray)">${o.customer_email}</span><br><span style="font-size:0.78rem">${o.customer_phone}</span></div>
+        <div><p style="font-size:0.65rem;letter-spacing:2px;color:var(--gray);margin-bottom:0.3rem">DELIVERY</p><span style="font-size:0.82rem">${o.customer_address || '—'}</span></div>
+        <div><p style="font-size:0.65rem;letter-spacing:2px;color:var(--gray);margin-bottom:0.3rem">TOTAL</p><strong style="font-size:1.2rem">₦${(o.total_ngn||0).toLocaleString()}</strong></div>
+        <div><p style="font-size:0.65rem;letter-spacing:2px;color:var(--gray);margin-bottom:0.3rem">STATUS</p><span class="status-badge status-${o.status}">${o.status}</span></div>
+        <div><p style="font-size:0.65rem;letter-spacing:2px;color:var(--gray);margin-bottom:0.3rem">DATE</p><span style="font-size:0.82rem">${o.created_at ? new Date(o.created_at).toLocaleString() : '—'}</span></div>
+        <div><p style="font-size:0.65rem;letter-spacing:2px;color:var(--gray);margin-bottom:0.3rem">TRANSACTION ID</p><code style="font-size:0.7rem">${o.transaction_id || '—'}</code></div>
+      </div>
+      <p style="font-size:0.65rem;letter-spacing:2px;color:var(--gray);margin-bottom:0.8rem">ITEMS ORDERED</p>
+      ${items.map(item => `
+        <div style="display:flex;align-items:center;gap:1rem;padding:0.8rem 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:1.8rem">${item.emoji}</span>
+          <div>
+            <strong style="font-size:0.85rem">${item.name}</strong><br>
+            <span style="font-size:0.75rem;color:var(--gray)">Size: ${item.size} | Color: <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${item.color};vertical-align:middle;border:1px solid rgba(0,0,0,0.1)"></span> | Qty: ${item.qty}</span>
+            ${item.customText ? `<br><span style="font-size:0.75rem;color:var(--gray)">Custom text: "${item.customText}"</span>` : ''}
+          </div>
+          <strong style="margin-left:auto;font-size:0.85rem">₦${(item.subtotal_ngn||0).toLocaleString()}</strong>
+        </div>`).join('')}
+      <div style="margin-top:1.5rem;display:flex;gap:0.8rem">
+        <a href="https://wa.me/${(o.customer_phone||'').replace(/\D/g,'')}" target="_blank" class="btn-admin">WhatsApp Customer</a>
+        <a href="mailto:${o.customer_email}?subject=Your HOODIES Order ${o.reference}" class="btn-admin-sm">Email Customer</a>
+      </div>`;
+
+    document.getElementById('order-modal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('order-modal').style.display = 'none';
+  }
+
+  document.getElementById('order-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'order-modal') closeModal();
+  });
+
+  loadOrders();
+</script>
+</body>
+</html>
