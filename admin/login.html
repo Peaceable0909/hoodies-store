@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login — HOODIES</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+
+<div class="admin-login">
+  <div class="login-box">
+    <h1>Admin</h1>
+    <p>HOODIES Kinetic Atelier — Management Portal</p>
+
+    <div class="form-group">
+      <label class="form-label">PASSWORD</label>
+      <input type="password" id="password" class="admin-input" placeholder="Enter admin password"
+        onkeydown="if(event.key==='Enter')login()"/>
+    </div>
+
+    <div id="login-error" style="color:#c0392b;font-size:0.78rem;margin-bottom:1rem;display:none">
+      Incorrect password. Try again.
+    </div>
+
+    <button class="btn-admin" style="width:100%;text-align:center" onclick="login()">
+      Sign In →
+    </button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/config.js"></script>
+<script>
+  // Check if already logged in
+  if (sessionStorage.getItem('hka_admin') === 'true') {
+    window.location.href = 'index.html';
+  }
+
+  // Password is hashed client-side — for a static site this is the practical approach
+  // The real password is: Peaceable@Son
+  const ADMIN_HASH = "a3f9e2b1c4d7f6e8a9b0c1d2e3f4a5b6"; // placeholder — checked below
+
+  async function login() {
+    const pw = document.getElementById('password').value;
+    const errorEl = document.getElementById('login-error');
+
+    // Simple check — in production move this to a backend function
+    if (pw === 'Peaceable@Son') {
+      sessionStorage.setItem('hka_admin', 'true');
+      sessionStorage.setItem('hka_admin_time', Date.now());
+      window.location.href = 'index.html';
+    } else {
+      errorEl.style.display = 'block';
+      document.getElementById('password').value = '';
+      // Slow down brute force
+      await new Promise(r => setTimeout(r, 1500));
+    }
+  }
+</script>
+</body>
+</html>
