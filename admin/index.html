@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard — HOODIES</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-brand">
+      <span>HOODIES</span>
+      <p>Admin Portal</p>
+    </div>
+    <nav class="admin-nav">
+      <a href="index.html" class="active"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="orders.html"><span class="nav-icon">📦</span> Orders</a>
+      <a href="products.html"><span class="nav-icon">👕</span> Products</a>
+      <a href="#" onclick="logout()"><span class="nav-icon">🚪</span> Sign Out</a>
+    </nav>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <h1>Dashboard</h1>
+      <div style="display:flex;gap:0.8rem;align-items:center">
+        <a href="../index.html" target="_blank" class="btn-admin-sm">View Store →</a>
+        <span style="font-size:0.72rem;color:var(--gray)" id="last-updated"></span>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stat-grid" id="stat-grid">
+      <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" id="stat-revenue">—</div><div class="stat-sub">All time (NGN)</div></div>
+      <div class="stat-card"><div class="stat-label">Total Orders</div><div class="stat-value" id="stat-orders">—</div><div class="stat-sub">All time</div></div>
+      <div class="stat-card"><div class="stat-label">Active Products</div><div class="stat-value" id="stat-products">—</div><div class="stat-sub">In store</div></div>
+      <div class="stat-card"><div class="stat-label">Pending Orders</div><div class="stat-value" id="stat-pending">—</div><div class="stat-sub">Need processing</div></div>
+    </div>
+
+    <!-- RECENT ORDERS -->
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h2>Recent Orders</h2>
+        <a href="orders.html" class="btn-admin-sm">View All</a>
+      </div>
+      <div id="recent-orders-wrap">
+        <div class="loading-state"><div class="loading-spinner"></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/db.js"></script>
+<script>
+  // Auth guard
+  if (sessionStorage.getItem('hka_admin') !== 'true') { window.location.href = 'login.html'; }
+  // Session timeout: 8 hours
+  const loginTime = parseInt(sessionStorage.getItem('hka_admin_time') || '0');
+  if (Date.now() - loginTime > 8 * 60 * 60 * 1000) { sessionStorage.clear(); window.location.href = 'login.html'; }
+
+  function logout() { sessionStorage.clear(); window.location.href = 'login.html'; }
+
+  document.getElementById('last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+
+  async function loadDashboard() {
+    const [orders, products] = await Promise.all([dbGetOrders(), dbGetProducts()]);
+
+    const totalRevenue = orders.filter(o => o.status === 'paid').reduce((s, o) => s + (o.total_ngn || 0), 0);
+    const pending = orders.filter(o => o.status === 'paid').length;
+
+    document.getElementById('stat-revenue').textContent = '₦' + totalRevenue.toLocaleString();
+    document.getElementById('stat-orders').textContent = orders.length;
+    document.getElementById('stat-products').textContent = products.length;
+    document.getElementById('stat-pending').textContent = pending;
+
+    const recent = orders.slice(0, 8);
+    const wrap = document.getElementById('recent-orders-wrap');
+
+    if (!recent.length) {
+      wrap.innerHTML = '<p style="padding:2rem;text-align:center;color:var(--gray);font-size:0.82rem">No orders yet. Share your store link to get started.</p>';
+      return;
+    }
+
+    wrap.innerHTML = `
+      <table class="admin-table">
+        <thead><tr>
+          <th>Reference</th><th>Customer</th><th>Items</th>
+          <th>Total</th><th>Status</th><th>Date</th><th></th>
+        </tr></thead>
+        <tbody>
+          ${recent.map(o => {
+            const items = Array.isArray(o.items) ? o.items : [];
+            const itemSummary = items.slice(0,2).map(i => i.name).join(', ') + (items.length > 2 ? ` +${items.length-2}` : '');
+            return `<tr>
+              <td><code style="font-size:0.72rem">${o.reference || '—'}</code></td>
+              <td><strong>${o.customer_name || '—'}</strong><br><span style="font-size:0.72rem;color:var(--gray)">${o.customer_email || ''}</span></td>
+              <td style="font-size:0.78rem;color:var(--gray)">${itemSummary || '—'}</td>
+              <td><strong>₦${(o.total_ngn||0).toLocaleString()}</strong></td>
+              <td><span class="status-badge status-${o.status || 'pending'}">${o.status || 'pending'}</span></td>
+              <td style="font-size:0.72rem;color:var(--gray)">${o.created_at ? new Date(o.created_at).toLocaleDateString() : '—'}</td>
+              <td><a href="orders.html" class="btn-admin-sm">View</a></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+  }
+
+  loadDashboard();
+</script>
+</body>
+</html>
