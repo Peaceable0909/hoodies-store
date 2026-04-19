@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product — HOODIES Kinetic Atelier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-logo">HOODIES</span>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="products.html">Shop</a>
+    <a href="product.html" class="active">Customize</a>
+    <a href="#">About</a>
+  </div>
+  <div class="nav-right">
+    <div class="currency-switcher">
+      <button class="currency-btn" data-currency="NGN" onclick="setCurrency('NGN')">₦</button>
+      <button class="currency-btn" data-currency="USD" onclick="setCurrency('USD')">$</button>
+    </div>
+    <a href="cart.html" class="cart-link">🛍 <span class="cart-badge" style="display:none">0</span></a>
+  </div>
+</nav>
+
+<div id="product-page">
+  <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding-top:64px">
+    <div class="loading-spinner"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-brand"><span class="nav-logo" style="display:block;margin-bottom:0.8rem">HOODIES</span><p>Crafting the future of street-ready kinetics since 2024.</p></div>
+    <div class="footer-col"><h4>Experience</h4><a href="#">Privacy Policy</a><a href="#">Terms of Service</a></div>
+    <div class="footer-col"><h4>Support</h4><a href="#">Shipping & Returns</a><a href="#">Contact</a></div>
+    <div class="footer-col"><h4>Newsletter</h4><div class="email-form"><input type="email" placeholder="Email Address" class="email-input"/><button class="email-btn">→</button></div></div>
+  </div>
+  <div class="footer-bottom"><span>© 2024 HOODIES KINETIC ATELIER. ALL RIGHTS RESERVED.</span></div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+<script src="js/app.js"></script>
+<script>
+  let product = null;
+  let selectedColor, selectedSize;
+  let qty = 1;
+
+  async function init() {
+    const pid = new URLSearchParams(window.location.search).get('id');
+    if (pid) {
+      product = await dbGetProduct(pid);
+    } else {
+      // Load first product as default
+      const all = await dbGetProducts();
+      product = all[0] || null;
+    }
+
+    if (!product) {
+      document.getElementById('product-page').innerHTML = '<p style="padding:8rem 3rem;text-align:center;color:var(--gray)">Product not found. <a href="products.html" style="text-decoration:underline">Back to shop →</a></p>';
+      return;
+    }
+
+    buildPage(product);
+  }
+
+  function buildPage(p) {
+    const colors = typeof p.colors === 'string' ? JSON.parse(p.colors) : p.colors;
+    const sizes = typeof p.sizes === 'string' ? JSON.parse(p.sizes) : p.sizes;
+    selectedColor = colors[0];
+    selectedSize = sizes[0];
+    const cur = getCurrentCurrency();
+
+    document.getElementById('product-page').innerHTML = `
+      <div class="product-page">
+        <div class="product-layout">
+
+          <!-- GALLERY -->
+          <div class="product-gallery">
+            <div class="main-image" id="main-img" style="background:${colors[0]}18">
+              <span class="release-tag">LIMITED RELEASE</span>
+              <span id="emoji-display" style="font-size:10rem;transition:all 0.3s">${p.emoji}</span>
+              <div class="preview-text" id="text-preview"></div>
+            </div>
+            <div class="thumb-row">
+              <div class="thumb active">${p.emoji}</div>
+              <div class="thumb">🔍</div>
+              <div class="thumb">🔄</div>
+            </div>
+          </div>
+
+          <!-- INFO -->
+          <div class="product-info">
+            <p class="product-info-tag">${p.category.toUpperCase()}</p>
+            <h1 class="product-info-name">${p.name}</h1>
+            <p class="product-info-price price-display" data-ngn="${p.price_ngn}" id="main-price">${formatPrice(p.price_ngn, cur)}</p>
+            <p class="product-info-price-usd" id="alt-price">${cur==='NGN' ? formatPrice(p.price_ngn,'USD') + ' USD' : formatPrice(p.price_ngn,'NGN') + ' NGN'}</p>
+            <p class="product-info-desc">${p.description}</p>
+
+            <!-- COLOR -->
+            <div class="field-group">
+              <div class="field-label">SELECT COLOR <span id="color-name" style="font-weight:400;letter-spacing:0;text-transform:none;font-size:0.75rem;color:var(--gray)"></span></div>
+              <div class="color-selector">
+                ${colors.map((c,i) => `
+                  <button class="cswatch ${i===0?'selected':''}" data-color="${c}"
+                    style="background:${c};${c==='#ffffff'?'border:2px solid #ccc':''}"
+                    onclick="selectColor(this,'${c}')"></button>`).join('')}
+              </div>
+            </div>
+
+            <!-- SIZE -->
+            <div class="field-group">
+              <div class="field-label">SELECT SIZE <a href="#">SIZE GUIDE</a></div>
+              <div class="size-selector">
+                ${sizes.map((s,i) => `
+                  <button class="size-btn ${i===0?'selected':''}" data-size="${s}"
+                    onclick="selectSize(this,'${s}')">${s}</button>`).join('')}
+              </div>
+            </div>
+
+            <!-- CUSTOM TEXT -->
+            <div class="field-group">
+              <div class="field-label">ADD YOUR CUSTOM TEXT / LOGO</div>
+              <input type="text" class="custom-input" id="custom-text" maxlength="20"
+                placeholder="Type here..." oninput="onTextInput(this.value)"/>
+              <div class="char-count"><span id="char-count">0</span> / 20</div>
+            </div>
+
+            <!-- QTY -->
+            <div class="field-group">
+              <div class="field-label">QUANTITY</div>
+              <div class="qty-row">
+                <button class="qty-btn" id="qty-minus">−</button>
+                <span class="qty-val" id="qty-val">1</span>
+                <button class="qty-btn" id="qty-plus">+</button>
+              </div>
+            </div>
+
+            <div class="field-group" style="padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+              <div style="display:flex;justify-content:space-between;font-family:var(--font-display);font-size:1rem;font-weight:700">
+                <span>TOTAL</span>
+                <span id="total-price">${formatPrice(p.price_ngn, cur)}</span>
+              </div>
+            </div>
+
+            <div class="add-row">
+              <button class="btn-full" id="add-btn">Add to Cart</button>
+            </div>
+
+            <div class="shipping-badges">
+              <span class="sh-badge">✦ <strong>Ships in 3–5 business days</strong></span>
+              <span class="sh-badge">✦ <strong>Free nationwide delivery</strong></span>
+            </div>
+
+            <!-- MATERIAL -->
+            <div class="material-section">
+              <h3>Artisan Craftsmanship</h3>
+              <p>The Signature Custom Hoodie is more than a garment — it's a blank canvas for your identity. Engineered with 450GSM heavyweight cotton, this piece features a structured box-fit silhouette that retains its shape wash after wash. Every stitch is placed with precision at our Kinetic Atelier.</p>
+              <table class="material-table">
+                <tr><td>Fabric Weight</td><td>450 GSM (Heavy)</td></tr>
+                <tr><td>Composition</td><td>90% Cotton, 10% Poly</td></tr>
+                <tr><td>Finishing</td><td>Brushed Fleece Interior</td></tr>
+                <tr><td>Customization</td><td>Embroidery Ready</td></tr>
+              </table>
+              <div class="feature-grid">
+                <div class="feature-card"><h4>100% Organic Cotton</h4><p>Sustainably sourced fibers for a premium skin feel.</p></div>
+                <div class="feature-card"><h4>Double-Lined Hood</h4><p>Enhanced structure and warmth without the bulk.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+
+    // Bindings
+    window.selectColor = (btn, color) => {
+      document.querySelectorAll('.cswatch').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedColor = color;
+      document.getElementById('main-img').style.background = color + '18';
+    };
+
+    window.selectSize = (btn, size) => {
+      document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedSize = size;
+    };
+
+    window.onTextInput = (val) => {
+      document.getElementById('text-preview').textContent = val;
+      document.getElementById('char-count').textContent = val.length;
+    };
+
+    document.getElementById('qty-minus').onclick = () => {
+      if (qty > 1) { qty--; updateTotal(); }
+    };
+    document.getElementById('qty-plus').onclick = () => {
+      qty++; updateTotal();
+    };
+
+    function updateTotal() {
+      document.getElementById('qty-val').textContent = qty;
+      document.getElementById('total-price').textContent = formatPrice(p.price_ngn * qty, getCurrentCurrency());
+    }
+
+    document.getElementById('add-btn').onclick = () => {
+      const customText = sanitize(document.getElementById('custom-text').value);
+      addToCart({
+        id: p.id, name: p.name, price_ngn: p.price_ngn,
+        color: selectedColor, size: selectedSize,
+        qty, emoji: p.emoji,
+        subtotal_ngn: p.price_ngn * qty,
+        customText
+      });
+      showToast('Added to cart!');
+    };
+  }
+
+  init();
+</script>
+</body>
+</html>

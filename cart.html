@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cart — HOODIES</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-logo">HOODIES</span>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="products.html">Shop</a>
+    <a href="product.html">Customize</a>
+  </div>
+  <div class="nav-right">
+    <div class="currency-switcher">
+      <button class="currency-btn" data-currency="NGN" onclick="setCurrency('NGN');renderCart()">₦</button>
+      <button class="currency-btn" data-currency="USD" onclick="setCurrency('USD');renderCart()">$</button>
+    </div>
+    <a href="cart.html" class="cart-link">🛍 <span class="cart-badge" style="display:none">0</span></a>
+  </div>
+</nav>
+
+<div class="cart-page">
+  <div class="cart-items-col">
+    <div class="cart-page-header"><h1>Your Cart</h1></div>
+    <div id="cart-items-list"></div>
+  </div>
+  <div class="cart-summary-col">
+    <h3>ORDER SUMMARY</h3>
+    <div id="cart-summary"></div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-brand"><span class="nav-logo" style="display:block;margin-bottom:0.8rem">HOODIES</span><p>Crafting premium kinetic apparel for the modern creator.</p></div>
+    <div class="footer-col"><h4>Resources</h4><a href="#">Shipping & Returns</a><a href="#">Privacy Policy</a></div>
+    <div class="footer-col"><h4>Company</h4><a href="#">Our Story</a><a href="#">Contact</a></div>
+    <div class="footer-col"><h4>Newsletter</h4><div class="email-form"><input type="email" placeholder="Your email" class="email-input"/><button class="email-btn">→</button></div></div>
+  </div>
+  <div class="footer-bottom"><span>© 2024 HOODIES KINETIC ATELIER. ALL RIGHTS RESERVED.</span></div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+<script src="js/app.js"></script>
+<script>
+  function renderCart() {
+    const cart = getCart();
+    const cur = getCurrentCurrency();
+    const itemsList = document.getElementById('cart-items-list');
+    const summary = document.getElementById('cart-summary');
+    updateCartBadge();
+
+    if (!cart.length) {
+      itemsList.innerHTML = `<div class="empty-cart-state"><div class="big-icon">🛍</div><h2>Your cart is empty</h2><p>Browse our collections and find something you love.</p><a href="products.html" class="btn-dark" style="margin-top:0.5rem;display:inline-block">Shop Now</a></div>`;
+      summary.innerHTML = '<p style="font-size:0.82rem;color:var(--gray)">Add items to see your summary.</p>';
+      return;
+    }
+
+    let total = 0;
+    itemsList.innerHTML = cart.map((item, i) => {
+      total += item.subtotal_ngn;
+      return `<div class="cart-item">
+        <div class="cart-item-img">${item.emoji}</div>
+        <div>
+          <p class="ci-name">${item.name}</p>
+          <div class="ci-meta">
+            Size: ${item.size}<br>
+            Color: <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${item.color};vertical-align:middle;border:1px solid rgba(0,0,0,0.1)"></span><br>
+            ${item.customText ? `Text: "${item.customText}"<br>` : ''}
+            Qty: ${item.qty}
+          </div>
+          <button class="ci-remove" onclick="removeFromCart(${i});renderCart()">Remove</button>
+        </div>
+        <p class="ci-price">${formatPrice(item.subtotal_ngn, cur)}</p>
+      </div>`;
+    }).join('');
+
+    summary.innerHTML = `
+      <div class="summary-line"><span>Subtotal</span><span>${formatPrice(total, cur)}</span></div>
+      <div class="summary-line"><span>Shipping</span><span>Free</span></div>
+      <div class="summary-line"><span>Tax</span><span>Included</span></div>
+      <div class="summary-line total"><span>TOTAL</span><span>${formatPrice(total, cur)}</span></div>
+      <div style="margin-top:1.5rem">
+        <a href="checkout.html" class="btn-full">Proceed to Checkout</a>
+        <a href="products.html" class="btn-full-outline">Continue Shopping</a>
+      </div>`;
+  }
+
+  renderCart();
+</script>
+</body>
+</html>

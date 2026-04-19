@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HOODIES — Kinetic Atelier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-logo">HOODIES</span>
+  <div class="nav-links">
+    <a href="index.html" class="active">Home</a>
+    <a href="products.html">Shop</a>
+    <a href="product.html">Customize</a>
+    <a href="#">About</a>
+  </div>
+  <div class="nav-right">
+    <div class="currency-switcher">
+      <button class="currency-btn active" data-currency="NGN" onclick="setCurrency('NGN')">₦</button>
+      <button class="currency-btn" data-currency="USD" onclick="setCurrency('USD')">$</button>
+    </div>
+    <a href="cart.html" class="cart-link">🛍 <span class="cart-badge" style="display:none">0</span></a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="edition-tag">EDITION 01</div>
+    <h1 class="hero-title">
+      <span>Your Style,</span>
+      <em>Your</em>
+      <span>Statement.</span>
+    </h1>
+    <p class="hero-sub">Customize the ultimate hoodie. Precise craftsmanship meets urban energy. Designed in our kinetic atelier for those who lead.</p>
+    <div class="hero-btns">
+      <a href="product.html" class="btn-dark">Start Customizing</a>
+      <a href="products.html" class="btn-light">Explore Collection</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-hoodie">🧥</div>
+    <div class="hero-float-tag">
+      <span class="float-tag-title">Limited Release</span>
+      <span class="float-tag-sub">Signature Hoodie</span>
+    </div>
+  </div>
+</section>
+
+<!-- VAULT -->
+<section class="vault">
+  <div class="section-row">
+    <h2 class="section-title">The Atelier Vault</h2>
+    <a href="products.html" class="link-arrow">View All Categories →</a>
+  </div>
+  <p class="section-sub">Curated silhouettes for every movement.</p>
+
+  <div class="vault-grid">
+    <a href="products.html?cat=hoodies" class="vault-card vault-card-large">
+      <div class="vault-img vault-img-blue">🧥</div>
+      <div class="vault-label"><span>Hoodies</span><span>→</span></div>
+    </a>
+    <a href="products.html?cat=polos" class="vault-card">
+      <div class="vault-img vault-img-light">👕</div>
+      <div class="vault-label"><span>Polos</span><span>→</span></div>
+    </a>
+    <a href="products.html?cat=tracksuits" class="vault-card">
+      <div class="vault-img vault-img-sand">🩱</div>
+      <div class="vault-label"><span>Tracksuits</span><span>→</span></div>
+    </a>
+  </div>
+
+  <a href="products.html?cat=caps" class="caps-banner" style="display:flex;text-decoration:none">
+    <div class="caps-marquee">
+      <div class="caps-track">ESSENTIAL CAPS &nbsp; ✦ &nbsp; ESSENTIAL CAPS &nbsp; ✦ &nbsp; ESSENTIAL CAPS &nbsp; ✦ &nbsp; ESSENTIAL CAPS &nbsp; ✦ &nbsp; ESSENTIAL CAPS &nbsp; ✦ &nbsp; ESSENTIAL CAPS &nbsp; ✦ &nbsp;</div>
+    </div>
+    <div class="caps-text">
+      <p class="caps-label">CURRENTLY PULSING</p>
+      <p class="caps-name">Essential Caps</p>
+    </div>
+    <span class="btn-white" style="position:relative;z-index:1">Shop Caps →</span>
+  </a>
+</section>
+
+<!-- TRENDING -->
+<section class="trending">
+  <div class="section-row">
+    <div>
+      <p class="section-eyebrow">CURRENTLY PULSING</p>
+      <h2 class="section-title">Trending Now</h2>
+    </div>
+    <div class="trend-nav">
+      <button class="nav-btn">←</button>
+      <button class="nav-btn">→</button>
+    </div>
+  </div>
+  <div class="product-grid-3" id="trending-grid">
+    <div class="loading-state"><div class="loading-spinner"></div></div>
+  </div>
+</section>
+
+<!-- PALETTE CTA -->
+<div class="palette-section">
+  <div>
+    <h2 class="palette-title">Master Your<br><em>Own Palette.</em></h2>
+    <p class="palette-desc">Our kinetic customizer allows you to tweak every detail — from stitch color to fabric weight. Make it uniquely yours.</p>
+    <div class="palette-actions">
+      <a href="product.html" class="btn-white">Launch Customizer</a>
+      <div class="color-dots">
+        <span class="cdot" style="background:#1a1a1a"></span>
+        <span class="cdot" style="background:#c0392b"></span>
+        <span class="cdot" style="background:#2563eb"></span>
+        <span class="cdot" style="background:#27ae60"></span>
+        <span class="cdot-more">+12 Colors</span>
+      </div>
+    </div>
+  </div>
+  <div class="palette-swatches">
+    <div class="swatch" style="background:#1a1a1a"><span>Onyx</span></div>
+    <div class="swatch" style="background:#2563eb"><span>Cobalt</span></div>
+    <div class="swatch" style="background:#c0392b"><span>Crimson</span></div>
+    <div class="swatch" style="background:#d4c8a8"><span style="color:rgba(0,0,0,0.4)">Sand</span></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <span class="nav-logo" style="display:block;margin-bottom:0.8rem">HOODIES</span>
+      <p>Elevating street essentialism through kinetic design and bespoke craftsmanship.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <a href="products.html">New Arrivals</a>
+      <a href="products.html">Best Sellers</a>
+      <a href="product.html">Custom Studio</a>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Shipping & Returns</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Atelier News</h4>
+      <p>Join the circle for early access and drops.</p>
+      <div class="email-form">
+        <input type="email" placeholder="Email Address" class="email-input"/>
+        <button class="email-btn">→</button>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2024 HOODIES KINETIC ATELIER. ALL RIGHTS RESERVED.</span>
+    <div style="display:flex;gap:1.5rem">
+      <a href="https://wa.me/2348024100995" target="_blank">WhatsApp</a>
+      <a href="#">Instagram</a>
+      <a href="#">TikTok</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+<script src="js/app.js"></script>
+<script>
+  // Load trending (featured) products
+  async function loadTrending() {
+    const grid = document.getElementById('trending-grid');
+    const all = await dbGetProducts();
+    const featured = all.filter(p => p.featured).slice(0, 3);
+    const list = featured.length ? featured : all.slice(0, 3);
+    const cur = getCurrentCurrency();
+    grid.innerHTML = list.map(p => {
+      const colors = typeof p.colors === 'string' ? JSON.parse(p.colors) : p.colors;
+      return `
+        <div class="product-card" onclick="window.location='product.html?id=${p.id}'">
+          <div class="pc-img" style="background:${colors[0]}22">
+            ${p.emoji}
+            <button class="pc-heart" onclick="event.stopPropagation()">♡</button>
+          </div>
+          <p class="pc-name">${p.name}</p>
+          <p class="pc-sub">${p.category.charAt(0).toUpperCase()+p.category.slice(1)}</p>
+          <p class="pc-price price-display" data-ngn="${p.price_ngn}">${formatPrice(p.price_ngn, cur)}</p>
+        </div>`;
+    }).join('');
+  }
+  loadTrending();
+</script>
+</body>
+</html>
