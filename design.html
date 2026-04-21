@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Design Your Own — HOODIES</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">Hoodies</a>
+  <div class="nav-links">
+    <a href="catalog.html">Catalog</a>
+    <a href="design.html" class="active">Design Your Own</a>
+    <a href="closet.html">My Closet</a>
+  </div>
+  <div class="nav-right">
+    <a href="cart.html" class="nav-icon-btn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <span class="cart-badge">0</span>
+    </a>
+    <a href="login.html" class="nav-icon-btn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </a>
+  </div>
+</nav>
+
+<div class="design-page">
+  <div class="design-header">
+    <h1>Bring Your Vision to Life</h1>
+    <p>Upload your sketches, choose your materials, and let our master tailors craft your unique design.</p>
+  </div>
+
+  <div class="design-form-wrap">
+    <!-- UPLOAD ZONE -->
+    <div class="upload-zone" id="upload-zone">
+      <input type="file" id="design-file" accept="image/*,.pdf" onchange="onFileSelect(this)"/>
+      <div class="upload-icon-wrap">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5b21b6" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+      </div>
+      <p class="upload-title">Drag &amp; Drop your designs</p>
+      <p style="font-size:0.85rem;color:var(--gray);margin-bottom:0.3rem">or <span class="upload-link">browse files</span></p>
+      <p class="upload-sub">Supports JPG, PNG, PDF up to 10MB</p>
+    </div>
+
+    <!-- FILE PREVIEW -->
+    <div class="upload-preview" id="file-preview">
+      <img id="preview-img" src="" alt="Design preview"/>
+      <button class="upload-preview-remove" onclick="removeFile()">✕</button>
+      <p style="text-align:center;font-size:0.72rem;color:var(--gray);margin-top:0.5rem" id="file-name"></p>
+    </div>
+
+    <!-- OPTIONS FORM -->
+    <div class="form-card">
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-label">Target Age Group</label>
+          <select class="form-select" id="age-group">
+            <option value="">Select Age</option>
+            <option>Kids (3–12)</option>
+            <option>Teens (13–17)</option>
+            <option>Adults (18+)</option>
+            <option>All Ages</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Preferred Material</label>
+          <select class="form-select" id="material">
+            <option value="">Select Material</option>
+            <option>100% Cotton</option>
+            <option>Heavyweight Cotton (450GSM)</option>
+            <option>French Terry</option>
+            <option>Piqué</option>
+            <option>Polyester Blend</option>
+            <option>Performance Dry-Fit</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:1rem">
+        <label class="form-label">Design Description &amp; Special Requests</label>
+        <textarea class="form-textarea" id="design-desc" placeholder="Describe the fit, specific measurements, or any unique details..."></textarea>
+      </div>
+    </div>
+
+    <!-- CONTACT INFO -->
+    <div class="form-card">
+      <h3>Your Details</h3>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-input" id="req-name" placeholder="John Doe"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone / WhatsApp</label>
+          <input type="tel" class="form-input" id="req-phone" placeholder="+234 800 000 0000"/>
+        </div>
+        <div class="form-group full-span">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="req-email" placeholder="you@email.com"/>
+        </div>
+      </div>
+    </div>
+
+    <div id="form-error" style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:0.75rem 1rem;border-radius:8px;font-size:0.82rem;display:none;margin-top:1rem"></div>
+
+    <div class="design-actions">
+      <button class="btn btn-green btn-lg" style="flex:1" onclick="submitDesign('whatsapp')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Discuss Design on WhatsApp
+      </button>
+      <button class="btn btn-yellow btn-lg" style="flex:1" onclick="submitDesign('quote')">Get a Quote</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+<script>
+  let selectedFile = null;
+
+  const zone = document.getElementById('upload-zone');
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    if (e.dataTransfer.files[0]) { document.getElementById('design-file').files = e.dataTransfer.files; onFileSelect(document.getElementById('design-file')); }
+  });
+
+  function onFileSelect(input) {
+    const file = input.files[0];
+    if (!file) return;
+    selectedFile = file;
+    document.getElementById('file-name').textContent = file.name;
+    if (file.type.startsWith('image/')) {
+      const r = new FileReader();
+      r.onload = e => { document.getElementById('preview-img').src = e.target.result; document.getElementById('file-preview').style.display = 'block'; };
+      r.readAsDataURL(file);
+    } else {
+      document.getElementById('preview-img').src = '';
+      document.getElementById('file-preview').style.display = 'block';
+    }
+  }
+
+  function removeFile() {
+    selectedFile = null;
+    document.getElementById('design-file').value = '';
+    document.getElementById('file-preview').style.display = 'none';
+  }
+
+  async function submitDesign(action) {
+    const name  = sanitize(document.getElementById('req-name').value.trim());
+    const phone = document.getElementById('req-phone').value.trim();
+    const email = document.getElementById('req-email').value.trim();
+    const desc  = sanitize(document.getElementById('design-desc').value.trim());
+    const age   = document.getElementById('age-group').value;
+    const mat   = document.getElementById('material').value;
+    const errEl = document.getElementById('form-error');
+
+    if (!name || !phone) { errEl.textContent = 'Please enter your name and phone number.'; errEl.style.display = 'block'; return; }
+    errEl.style.display = 'none';
+
+    // Save request to DB
+    try {
+      let fileUrl = null;
+      if (selectedFile) {
+        fileUrl = await uploadImage(selectedFile, 'design-requests', 'designs');
+      }
+      await dbSaveDesignRequest({ customer_name: name, phone, email, description: desc, age_group: age, material: mat, design_file_url: fileUrl, status: 'pending', created_at: new Date().toISOString() });
+    } catch(e) { console.warn('Design request save failed:', e); }
+
+    if (action === 'whatsapp') {
+      const msg = encodeURIComponent(`CUSTOM DESIGN REQUEST\n\nName: ${name}\nPhone: ${phone}\nEmail: ${email}\nAge Group: ${age||'Not specified'}\nMaterial: ${mat||'Not specified'}\n\nDescription:\n${desc}`);
+      window.open(`https://wa.me/${CONFIG.WHATSAPP}?text=${msg}`, '_blank');
+    } else {
+      toast('Quote request sent! We will contact you within 24 hours.');
+    }
+  }
+</script>
+</body>
+</html>
