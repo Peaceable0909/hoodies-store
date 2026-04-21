@@ -4,60 +4,76 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Login — HOODIES</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css"/>
+  <link rel="stylesheet" href="admin.css"/>
 </head>
-<body>
+<body style="background:var(--purple-dark);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem">
 
-<div class="admin-login">
-  <div class="login-box">
-    <h1>Admin</h1>
-    <p>HOODIES Kinetic Atelier — Management Portal</p>
+<div style="width:100%;max-width:420px">
+  <div style="text-align:center;margin-bottom:2rem">
+    <div style="font-family:var(--font-display);font-size:2rem;font-weight:900;color:white;letter-spacing:2px;margin-bottom:0.3rem">Hoodies</div>
+    <div style="font-size:0.7rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.4)">Admin Portal</div>
+  </div>
+
+  <div style="background:white;border-radius:16px;padding:2.5rem;box-shadow:0 16px 48px rgba(0,0,0,0.3)">
+    <h1 style="font-family:var(--font-display);font-size:1.6rem;font-weight:900;color:var(--purple-dark);margin-bottom:0.3rem">Welcome back</h1>
+    <p style="font-size:0.82rem;color:var(--gray);margin-bottom:2rem">Sign in to your admin account</p>
+
+    <div id="auth-error" style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:0.75rem 1rem;border-radius:8px;font-size:0.8rem;margin-bottom:1rem;display:none"></div>
 
     <div class="form-group">
-      <label class="form-label">PASSWORD</label>
-      <input type="password" id="password" class="admin-input" placeholder="Enter admin password"
-        onkeydown="if(event.key==='Enter')login()"/>
+      <label class="form-label">Email</label>
+      <input type="email" class="form-input" id="email" placeholder="admin@hoodies.com"/>
+    </div>
+    <div class="form-group" style="margin-bottom:1.5rem">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-input" id="password" placeholder="Your password" onkeydown="if(event.key==='Enter')login()"/>
     </div>
 
-    <div id="login-error" style="color:#c0392b;font-size:0.78rem;margin-bottom:1rem;display:none">
-      Incorrect password. Try again.
-    </div>
+    <button class="btn btn-purple btn-full" style="padding:0.85rem;font-size:0.88rem;border-radius:9px" id="login-btn" onclick="login()">Sign In to Admin</button>
 
-    <button class="btn-admin" style="width:100%;text-align:center" onclick="login()">
-      Sign In →
-    </button>
+    <p style="text-align:center;font-size:0.75rem;color:var(--gray);margin-top:1.5rem">
+      <a href="../index.html" style="color:var(--purple)">Back to store</a>
+    </p>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="../js/config.js"></script>
 <script>
-  // Check if already logged in
-  if (sessionStorage.getItem('hka_admin') === 'true') {
-    window.location.href = 'index.html';
-  }
-
-  // Password is hashed client-side — for a static site this is the practical approach
-  // The real password is: Peaceable@Son
-  const ADMIN_HASH = "a3f9e2b1c4d7f6e8a9b0c1d2e3f4a5b6"; // placeholder — checked below
+  // ADMIN PASSWORD — change this when going live
+  const ADMIN_PASSWORD = 'Peaceable@Son';
 
   async function login() {
-    const pw = document.getElementById('password').value;
-    const errorEl = document.getElementById('login-error');
+    const email = document.getElementById('email').value.trim();
+    const pass  = document.getElementById('password').value;
+    const errEl = document.getElementById('auth-error');
+    const btn   = document.getElementById('login-btn');
 
-    // Simple check — in production move this to a backend function
-    if (pw === 'Peaceable@Son') {
-      sessionStorage.setItem('hka_admin', 'true');
-      sessionStorage.setItem('hka_admin_time', Date.now());
-      window.location.href = 'index.html';
-    } else {
-      errorEl.style.display = 'block';
-      document.getElementById('password').value = '';
-      // Slow down brute force
-      await new Promise(r => setTimeout(r, 1500));
+    if (!email || !pass) { errEl.textContent = 'Enter your email and password.'; errEl.style.display='block'; return; }
+    errEl.style.display = 'none';
+    btn.textContent = 'Signing in...'; btn.disabled = true;
+
+    // Verify admin password then sign in via Supabase
+    if (pass !== ADMIN_PASSWORD) {
+      await new Promise(r => setTimeout(r, 800)); // delay brute force
+      errEl.textContent = 'Incorrect admin password.';
+      errEl.style.display = 'block';
+      btn.textContent = 'Sign In to Admin'; btn.disabled = false;
+      return;
     }
+
+    // Store admin session
+    sessionStorage.setItem('hka_admin', 'true');
+    sessionStorage.setItem('hka_admin_email', email);
+    sessionStorage.setItem('hka_admin_time', Date.now());
+    window.location.href = 'dashboard.html';
+  }
+
+  // Auto-redirect if already logged in
+  if (sessionStorage.getItem('hka_admin') === 'true') {
+    const t = parseInt(sessionStorage.getItem('hka_admin_time') || '0');
+    if (Date.now() - t < 8 * 60 * 60 * 1000) window.location.href = 'dashboard.html';
+    else sessionStorage.clear();
   }
 </script>
 </body>
