@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Analytics — HOODIES Admin</title>
+  <link rel="stylesheet" href="admin.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand"><div class="sidebar-brand-name">Hoodies</div><div class="sidebar-brand-sub">E-Commerce Admin</div></div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section-label">Main</div>
+    <a href="dashboard.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="orders.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>Orders</a>
+    <a href="inventory.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>Inventory</a>
+    <a href="customers.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Customers</a>
+    <a href="analytics.html" class="nav-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Analytics</a>
+    <div class="sidebar-section-label" style="margin-top:0.5rem">Design</div>
+    <a href="design-requests.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Design Requests</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-user"><div class="sidebar-avatar">AD</div><div><div class="sidebar-user-name">Admin User</div><div class="sidebar-user-role">System Manager</div></div></div>
+    <button class="btn-signout" onclick="adminLogout()">Sign Out</button>
+  </div>
+</aside>
+
+<div class="topbar">
+  <div class="topbar-search">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" placeholder="Search analytics..."/>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-user"><div class="topbar-avatar">AD</div><div style="font-size:0.8rem;font-weight:600">Admin User</div></div>
+  </div>
+</div>
+
+<main class="main">
+  <div class="page-content">
+    <div class="page-header"><h1>Analytics</h1><p>Deep insights into your store's performance</p></div>
+
+    <!-- TOP STATS -->
+    <div class="stat-row" style="grid-template-columns:repeat(4,1fr);margin-bottom:1.5rem" id="top-stats">
+      <div class="card" style="padding:1.2rem"><div style="font-size:0.68rem;font-weight:700;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem">Total Revenue</div><div style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;color:var(--purple-dark)" id="a-rev">—</div><div style="font-size:0.72rem;color:var(--green);font-weight:600;margin-top:0.2rem">+12.5%</div></div>
+      <div class="card" style="padding:1.2rem"><div style="font-size:0.68rem;font-weight:700;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem">Total Orders</div><div style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;color:var(--purple-dark)" id="a-orders">—</div><div style="font-size:0.72rem;color:var(--green);font-weight:600;margin-top:0.2rem">+8.2%</div></div>
+      <div class="card" style="padding:1.2rem"><div style="font-size:0.68rem;font-weight:700;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem">Customers</div><div style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;color:var(--purple-dark)" id="a-custs">—</div></div>
+      <div class="card" style="padding:1.2rem"><div style="font-size:0.68rem;font-weight:700;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem">Avg Order Value</div><div style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;color:var(--purple-dark)" id="a-aov">—</div></div>
+    </div>
+
+    <!-- CHARTS ROW 1 -->
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.2rem;margin-bottom:1.5rem">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Revenue Over Time</div></div>
+        <div style="padding:1.2rem"><div class="chart-wrap" style="height:220px"><canvas id="rev-chart"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Orders by Status</div></div>
+        <div style="padding:1.2rem"><div class="chart-wrap" style="height:220px"><canvas id="status-chart"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW 2 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Category Performance</div></div>
+        <div style="padding:1.2rem">
+          <div id="cat-bars"><div class="loading-row"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Order Size Distribution</div></div>
+        <div style="padding:1.2rem"><div class="chart-wrap" style="height:220px"><canvas id="size-chart"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- TOP PRODUCTS TABLE -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Top Products by Revenue</div>
+        <button class="btn btn-yellow btn-sm" onclick="exportAnalytics()">Download Report</button>
+      </div>
+      <div id="top-products-wrap"><div class="loading-row"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/db.js"></script>
+<script src="admin.js"></script>
+<script>
+  if (!adminGuard()) throw new Error('Unauthorized');
+
+  async function load() {
+    const data = await dbAnalytics();
+    const { revenue, avgOrder, totalOrders, totalCustomers, catCount, revByDay, days, orders } = data;
+
+    document.getElementById('a-rev').textContent    = fmt(revenue);
+    document.getElementById('a-orders').textContent = totalOrders;
+    document.getElementById('a-custs').textContent  = totalCustomers;
+    document.getElementById('a-aov').textContent    = fmt(avgOrder);
+
+    // Revenue line chart
+    const ctx1 = document.getElementById('rev-chart').getContext('2d');
+    const grad = ctx1.createLinearGradient(0,0,0,220);
+    grad.addColorStop(0,'rgba(91,33,182,0.2)'); grad.addColorStop(1,'rgba(91,33,182,0)');
+    new Chart(ctx1,{type:'line',data:{labels:days.map(d=>d.slice(5)),datasets:[{data:days.map(d=>revByDay[d]||0),borderColor:'#5b21b6',borderWidth:2,backgroundColor:grad,fill:true,tension:0.4,pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'₦'+c.raw.toLocaleString()},backgroundColor:'#3b0764',bodyColor:'white',padding:8,cornerRadius:6}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:7,font:{size:10},color:'#9ca3af'}},y:{grid:{color:'#f3f4f6'},ticks:{callback:v=>'₦'+(v/1000).toFixed(0)+'k',font:{size:10},color:'#9ca3af'}}}}});
+
+    // Status donut
+    const statuses=['paid','processing','shipped','completed','cancelled'];
+    const statusCounts=statuses.map(s=>orders.filter(o=>o.status===s).length);
+    new Chart(document.getElementById('status-chart').getContext('2d'),{type:'doughnut',data:{labels:statuses.map(s=>s.charAt(0).toUpperCase()+s.slice(1)),datasets:[{data:statusCounts,backgroundColor:['#fef3c7','#dbeafe','#ede9fe','#dcfce7','#fee2e2'],borderColor:['#f59e0b','#2563eb','#5b21b6','#16a34a','#dc2626'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:12}}}}});
+
+    // Category bars
+    const cats=[{k:'polos',n:'Polos',c:'#5b21b6'},{k:'gymwear',n:'Gym Wear',c:'#16a34a'},{k:'hoodies',n:'Hoodies',c:'#f59e0b'},{k:'tracksuits',n:'Tracksuits',c:'#ea580c'},{k:'caps',n:'Caps',c:'#2563eb'}];
+    const maxCat=Math.max(...cats.map(c=>catCount[c.k]||0),1);
+    document.getElementById('cat-bars').innerHTML = cats.map(c=>{const pct=Math.round(((catCount[c.k]||0)/maxCat)*100);return`<div class="progress-item"><div class="progress-label"><span style="font-weight:600">${c.n}</span><span style="color:${c.c};font-weight:700">${catCount[c.k]||0} orders</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;background:${c.c}"></div></div></div>`;}).join('');
+
+    // Size distribution from orders
+    const sizeCount={};
+    orders.forEach(o=>(pj(o.items,[])).forEach(i=>{if(i.size)sizeCount[i.size]=(sizeCount[i.size]||0)+i.qty;}));
+    const sizeLabels=Object.keys(sizeCount); const sizeVals=sizeLabels.map(s=>sizeCount[s]);
+    new Chart(document.getElementById('size-chart').getContext('2d'),{type:'bar',data:{labels:sizeLabels,datasets:[{data:sizeVals,backgroundColor:'rgba(91,33,182,0.15)',borderColor:'#5b21b6',borderWidth:2,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'#f3f4f6'},ticks:{font:{size:10}}}}}});
+
+    // Top products
+    const productRev={};
+    orders.forEach(o=>(pj(o.items,[])).forEach(i=>{if(!productRev[i.name])productRev[i.name]={rev:0,qty:0,img:i.image_url||null};productRev[i.name].rev+=(i.subtotal_ngn||i.price_ngn*i.qty||0);productRev[i.name].qty+=i.qty;}));
+    const topProds=Object.entries(productRev).sort((a,b)=>b[1].rev-a[1].rev).slice(0,6);
+    document.getElementById('top-products-wrap').innerHTML=topProds.length?`<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>#</th><th>PRODUCT</th><th>UNITS SOLD</th><th>REVENUE</th><th>SHARE</th></tr></thead><tbody>${topProds.map(([name,d],i)=>`<tr><td style="font-weight:700;color:var(--gray)">${i+1}</td><td style="font-weight:600">${name}</td><td>${d.qty}</td><td style="font-weight:700;color:var(--purple-dark)">${fmt(d.rev)}</td><td><div class="stock-bar-wrap" style="width:100px"><div class="stock-bar" style="width:${revenue?Math.round((d.rev/revenue)*100):0}%;background:var(--purple)"></div></div><span style="font-size:0.72rem;color:var(--gray);margin-left:0.4rem">${revenue?Math.round((d.rev/revenue)*100):0}%</span></td></tr>`).join('')}</tbody></table></div>`:'<div class="loading-row"><p>No product sales data yet.</p></div>';
+  }
+
+  function exportAnalytics() { toast('Report download coming soon','success'); }
+
+  load();
+</script>
+</body>
+</html>

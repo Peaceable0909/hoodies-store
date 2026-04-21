@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Customers — HOODIES Admin</title>
+  <link rel="stylesheet" href="admin.css"/>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand"><div class="sidebar-brand-name">Hoodies</div><div class="sidebar-brand-sub">E-Commerce Admin</div></div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section-label">Main</div>
+    <a href="dashboard.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="orders.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>Orders</a>
+    <a href="inventory.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>Inventory</a>
+    <a href="customers.html" class="nav-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Customers</a>
+    <a href="analytics.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Analytics</a>
+    <div class="sidebar-section-label" style="margin-top:0.5rem">Design</div>
+    <a href="design-requests.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Design Requests</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-user"><div class="sidebar-avatar">AD</div><div><div class="sidebar-user-name">Admin User</div><div class="sidebar-user-role">System Manager</div></div></div>
+    <button class="btn-signout" onclick="adminLogout()">Sign Out</button>
+  </div>
+</aside>
+
+<div class="topbar">
+  <div class="topbar-search">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" placeholder="Search customers..." id="search-input" oninput="render()"/>
+  </div>
+  <div class="topbar-right">
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export
+    </button>
+    <div class="topbar-user"><div class="topbar-avatar">AD</div><div style="font-size:0.8rem;font-weight:600">Admin User</div></div>
+  </div>
+</div>
+
+<main class="main">
+  <div class="page-content">
+    <div class="page-header">
+      <h1>Customers</h1>
+      <p id="cust-sub">All registered customers and guest order history</p>
+    </div>
+
+    <!-- SUMMARY -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem">
+      <div class="card" style="padding:1.2rem">
+        <div style="font-size:0.68rem;font-weight:700;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem">TOTAL CUSTOMERS</div>
+        <div style="font-family:var(--font-display);font-size:2rem;font-weight:900;color:var(--purple-dark)" id="cust-total">—</div>
+      </div>
+      <div class="card" style="padding:1.2rem">
+        <div style="font-size:0.68rem;font-weight:700;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem">TOTAL SPENT</div>
+        <div style="font-family:var(--font-display);font-size:2rem;font-weight:900;color:var(--purple-dark)" id="cust-spent">—</div>
+      </div>
+      <div class="card" style="padding:1.2rem">
+        <div style="font-size:0.68rem;font-weight:700;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem">REPEAT CUSTOMERS</div>
+        <div style="font-family:var(--font-display);font-size:2rem;font-weight:900;color:var(--green)" id="cust-repeat">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="cust-table-wrap">
+        <div class="loading-row"><div class="spinner"></div><span>Loading customers...</span></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- CUSTOMER DETAIL MODAL -->
+<div class="modal-wrap" id="cust-modal">
+  <div class="modal-box" style="max-width:580px">
+    <button class="modal-close" onclick="document.getElementById('cust-modal').classList.remove('show')">✕</button>
+    <h2 id="cust-modal-name">Customer</h2>
+    <div id="cust-modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/db.js"></script>
+<script src="admin.js"></script>
+<script>
+  if (!adminGuard()) throw new Error('Unauthorized');
+
+  let custData = [];
+
+  async function load() {
+    // Build customer list from orders (captures guests too)
+    const orders = await dbOrders({});
+    const custMap = {};
+
+    orders.forEach(o => {
+      const key = o.customer_email || o.customer_name;
+      if (!key) return;
+      if (!custMap[key]) {
+        custMap[key] = {
+          name: o.customer_name, email: o.customer_email,
+          phone: o.customer_phone, orders: [], totalSpent: 0,
+          firstOrder: o.created_at
+        };
+      }
+      custMap[key].orders.push(o);
+      custMap[key].totalSpent += (o.total_ngn || 0);
+      if (o.created_at < custMap[key].firstOrder) custMap[key].firstOrder = o.created_at;
+    });
+
+    custData = Object.values(custMap).sort((a,b) => b.totalSpent - a.totalSpent);
+
+    const total   = custData.length;
+    const spent   = custData.reduce((s,c) => s+c.totalSpent, 0);
+    const repeat  = custData.filter(c => c.orders.length > 1).length;
+
+    document.getElementById('cust-total').textContent  = total;
+    document.getElementById('cust-spent').textContent  = fmt(spent);
+    document.getElementById('cust-repeat').textContent = repeat;
+    document.getElementById('cust-sub').textContent    = `${total} customers · ${orders.length} total orders`;
+
+    render();
+  }
+
+  function render() {
+    const q    = (document.getElementById('search-input').value||'').toLowerCase();
+    const list = custData.filter(c =>
+      !q || (c.name||'').toLowerCase().includes(q) ||
+            (c.email||'').toLowerCase().includes(q) ||
+            (c.phone||'').toLowerCase().includes(q)
+    );
+
+    const wrap = document.getElementById('cust-table-wrap');
+    wrap.innerHTML = list.length ? `
+      <div style="overflow-x:auto">
+        <table class="data-table" style="min-width:700px">
+          <thead><tr>
+            <th>CUSTOMER</th><th>EMAIL</th><th>PHONE</th>
+            <th>ORDER #</th><th>TOTAL SPENT</th><th>JOINED</th><th>ACTIONS</th>
+          </tr></thead>
+          <tbody>
+            ${list.map((c,i) => {
+              const bg = avatarColor(c.name||'');
+              const tc = avatarTextColor(bg);
+              const init = initials(c.name||'?');
+              return `<tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:0.7rem">
+                    <div class="cust-avatar" style="background:${bg};color:${tc}">${init}</div>
+                    <div style="font-weight:600;font-size:0.82rem">${c.name||'—'}</div>
+                  </div>
+                </td>
+                <td style="font-size:0.78rem;color:var(--gray)">${c.email||'—'}</td>
+                <td style="font-size:0.78rem;color:var(--gray)">${c.phone||'—'}</td>
+                <td style="font-weight:700;color:var(--purple)">${c.orders.length}</td>
+                <td style="font-weight:700;color:var(--purple-dark)">${fmt(c.totalSpent)}</td>
+                <td style="font-size:0.75rem;color:var(--gray)">${fmtDate(c.firstOrder)}</td>
+                <td>
+                  <div style="display:flex;gap:0.4rem">
+                    <button class="btn btn-outline btn-sm" onclick="viewCustomer(${i})">View Orders</button>
+                    <a href="https://wa.me/${(c.phone||'').replace(/\D/g,'')}" target="_blank" class="btn-icon" title="WhatsApp">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="#16a34a"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    </a>
+                  </div>
+                </td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>` : '<div class="loading-row"><p>No customers found.</p></div>';
+  }
+
+  function viewCustomer(i) {
+    const c = custData[i];
+    document.getElementById('cust-modal-name').textContent = c.name || c.email || 'Customer';
+    document.getElementById('cust-modal-body').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:1.2rem">
+        <div style="background:var(--purple-pale);border-radius:8px;padding:0.9rem">
+          <div style="font-size:0.62rem;font-weight:700;letter-spacing:1px;color:var(--gray);margin-bottom:0.3rem">EMAIL</div>
+          <div style="font-size:0.82rem;font-weight:500">${c.email||'—'}</div>
+        </div>
+        <div style="background:var(--purple-pale);border-radius:8px;padding:0.9rem">
+          <div style="font-size:0.62rem;font-weight:700;letter-spacing:1px;color:var(--gray);margin-bottom:0.3rem">PHONE</div>
+          <div style="font-size:0.82rem;font-weight:500">${c.phone||'—'}</div>
+        </div>
+        <div style="background:var(--purple-pale);border-radius:8px;padding:0.9rem">
+          <div style="font-size:0.62rem;font-weight:700;letter-spacing:1px;color:var(--gray);margin-bottom:0.3rem">TOTAL ORDERS</div>
+          <div style="font-family:var(--font-display);font-size:1.3rem;font-weight:900;color:var(--purple-dark)">${c.orders.length}</div>
+        </div>
+        <div style="background:var(--purple-pale);border-radius:8px;padding:0.9rem">
+          <div style="font-size:0.62rem;font-weight:700;letter-spacing:1px;color:var(--gray);margin-bottom:0.3rem">LIFETIME SPEND</div>
+          <div style="font-family:var(--font-display);font-size:1.3rem;font-weight:900;color:var(--purple-dark)">${fmt(c.totalSpent)}</div>
+        </div>
+      </div>
+      <div style="font-size:0.65rem;font-weight:700;letter-spacing:1px;color:var(--gray);margin-bottom:0.8rem;text-transform:uppercase">Order History</div>
+      ${c.orders.map(o=>`
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:0.8rem;background:var(--bg);border-radius:8px;margin-bottom:0.5rem">
+          <div>
+            <div style="font-weight:700;font-size:0.82rem;color:var(--purple)">#${(o.reference||'').slice(-6)}</div>
+            <div style="font-size:0.72rem;color:var(--gray)">${fmtDate(o.created_at)} · ${(pj(o.items,[])).length} item(s)</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:700;font-size:0.88rem">${fmt(o.total_ngn)}</div>
+            <span class="badge badge-${o.status}" style="margin-top:0.3rem">${o.status}</span>
+          </div>
+        </div>`).join('')}`;
+    document.getElementById('cust-modal').classList.add('show');
+  }
+
+  document.getElementById('cust-modal').addEventListener('click', e => { if(e.target.id==='cust-modal') e.target.classList.remove('show'); });
+
+  function exportCSV() {
+    const rows=[['Name','Email','Phone','Total Orders','Total Spent NGN','First Order']];
+    custData.forEach(c=>rows.push([c.name,c.email,c.phone,c.orders.length,c.totalSpent,fmtDate(c.firstOrder)]));
+    const csv=rows.map(r=>r.map(v=>`"${v||''}"`).join(',')).join('\n');
+    const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='customers.csv'; a.click();
+    toast('Exported!','success');
+  }
+
+  load();
+</script>
+</body>
+</html>

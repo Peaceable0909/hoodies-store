@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Design Requests — HOODIES Admin</title>
+  <link rel="stylesheet" href="admin.css"/>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand"><div class="sidebar-brand-name">Hoodies</div><div class="sidebar-brand-sub">E-Commerce Admin</div></div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section-label">Main</div>
+    <a href="dashboard.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="orders.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>Orders</a>
+    <a href="inventory.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>Inventory</a>
+    <a href="customers.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Customers</a>
+    <a href="analytics.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Analytics</a>
+    <div class="sidebar-section-label" style="margin-top:0.5rem">Design</div>
+    <a href="design-requests.html" class="nav-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Design Requests</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-user"><div class="sidebar-avatar">AD</div><div><div class="sidebar-user-name">Admin User</div><div class="sidebar-user-role">System Manager</div></div></div>
+    <button class="btn-signout" onclick="adminLogout()">Sign Out</button>
+  </div>
+</aside>
+
+<div class="topbar">
+  <div class="topbar-search">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" placeholder="Search design requests..." id="search-input" oninput="render()"/>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-user"><div class="topbar-avatar">AD</div><div style="font-size:0.8rem;font-weight:600">Admin User</div></div>
+  </div>
+</div>
+
+<main class="main">
+  <div class="page-content">
+    <div class="page-header"><h1>Design Requests</h1><p>Custom design submissions from customers</p></div>
+
+    <div class="card">
+      <div id="req-wrap">
+        <div class="loading-row"><div class="spinner"></div><span>Loading requests...</span></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="modal-wrap" id="req-modal">
+  <div class="modal-box" style="max-width:560px">
+    <button class="modal-close" onclick="document.getElementById('req-modal').classList.remove('show')">✕</button>
+    <h2 id="req-modal-title">Design Request</h2>
+    <div id="req-modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/db.js"></script>
+<script src="admin.js"></script>
+<script>
+  if (!adminGuard()) throw new Error('Unauthorized');
+  let allReqs=[];
+
+  async function load() {
+    allReqs = await dbDesignRequests();
+    render();
+  }
+
+  function render() {
+    const q=document.getElementById('search-input').value.toLowerCase();
+    const list=allReqs.filter(r=>!q||(r.customer_name||'').toLowerCase().includes(q)||(r.email||'').toLowerCase().includes(q));
+    const wrap=document.getElementById('req-wrap');
+
+    wrap.innerHTML=list.length?`
+      <div style="overflow-x:auto">
+        <table class="data-table" style="min-width:700px">
+          <thead><tr><th>CUSTOMER</th><th>EMAIL / PHONE</th><th>AGE GROUP</th><th>MATERIAL</th><th>STATUS</th><th>DATE</th><th>ACTION</th></tr></thead>
+          <tbody>
+            ${list.map((r,i)=>`<tr>
+              <td style="font-weight:600">${r.customer_name||'—'}</td>
+              <td style="font-size:0.78rem;color:var(--gray)">${r.email||''}<br>${r.phone||''}</td>
+              <td>${r.age_group||'—'}</td>
+              <td>${r.material||'—'}</td>
+              <td>
+                <select class="form-select" style="width:120px;font-size:0.72rem;padding:0.3rem 0.5rem" onchange="updateReqStatus('${r.id}',this.value)">
+                  <option value="pending"   ${r.status==='pending'?'selected':''}>Pending</option>
+                  <option value="reviewing" ${r.status==='reviewing'?'selected':''}>Reviewing</option>
+                  <option value="quoted"    ${r.status==='quoted'?'selected':''}>Quoted</option>
+                  <option value="completed" ${r.status==='completed'?'selected':''}>Completed</option>
+                  <option value="cancelled" ${r.status==='cancelled'?'selected':''}>Cancelled</option>
+                </select>
+              </td>
+              <td style="font-size:0.75rem;color:var(--gray)">${fmtDate(r.created_at)}</td>
+              <td>
+                <div style="display:flex;gap:0.4rem">
+                  <button class="btn btn-outline btn-sm" onclick="viewReq(${i})">View</button>
+                  <a href="https://wa.me/${(r.phone||'').replace(/\D/g,'')}" target="_blank" class="btn btn-sm" style="background:var(--green-light);color:var(--green)">WhatsApp</a>
+                </div>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>` : '<div class="loading-row"><p>No design requests yet.</p></div>';
+  }
+
+  async function updateReqStatus(id, status) {
+    const sb=supabase.createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_ANON_KEY);
+    await sb.from('design_requests').update({status}).eq('id',id);
+    const r=allReqs.find(x=>x.id===id); if(r) r.status=status;
+    toast('Status updated','success');
+  }
+
+  function viewReq(i) {
+    const r=allReqs[i];
+    document.getElementById('req-modal-title').textContent='Request from '+(r.customer_name||'Customer');
+    document.getElementById('req-modal-body').innerHTML=`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:1.2rem">
+        <div style="background:var(--purple-pale);border-radius:8px;padding:0.9rem"><div style="font-size:0.62rem;font-weight:700;letter-spacing:1px;color:var(--gray);margin-bottom:0.3rem">CONTACT</div><div style="font-size:0.82rem">${r.email||'—'}<br>${r.phone||'—'}</div></div>
+        <div style="background:var(--purple-pale);border-radius:8px;padding:0.9rem"><div style="font-size:0.62rem;font-weight:700;letter-spacing:1px;color:var(--gray);margin-bottom:0.3rem">SPECS</div><div style="font-size:0.82rem">Age: ${r.age_group||'—'}<br>Material: ${r.material||'—'}</div></div>
+      </div>
+      ${r.description?`<div style="font-size:0.65rem;font-weight:700;letter-spacing:1px;color:var(--gray);margin-bottom:0.5rem;text-transform:uppercase">Description</div><div style="background:var(--bg);border-radius:8px;padding:1rem;font-size:0.82rem;line-height:1.7;margin-bottom:1rem">${r.description}</div>`:''}
+      ${r.design_file_url?`<div style="font-size:0.65rem;font-weight:700;letter-spacing:1px;color:var(--gray);margin-bottom:0.5rem;text-transform:uppercase">Uploaded Design</div><img src="${r.design_file_url}" style="width:100%;border-radius:8px;border:1px solid var(--border);margin-bottom:1rem"/>`:''}
+      <div style="display:flex;gap:0.75rem">
+        <a href="https://wa.me/${(r.phone||'').replace(/\D/g,'')}" target="_blank" class="btn btn-sm" style="background:var(--green);color:white">Discuss on WhatsApp</a>
+        ${r.email?`<a href="mailto:${r.email}?subject=Your Custom Design Request&body=Hi ${r.customer_name}, thank you for your design request!" class="btn btn-ghost btn-sm">Send Email</a>`:''}
+      </div>`;
+    document.getElementById('req-modal').classList.add('show');
+  }
+
+  document.getElementById('req-modal').addEventListener('click',e=>{if(e.target.id==='req-modal')e.target.classList.remove('show');});
+  load();
+</script>
+</body>
+</html>
