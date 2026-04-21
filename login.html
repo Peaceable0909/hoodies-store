@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign In — HOODIES</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<div class="auth-page">
+  <!-- LEFT PANEL -->
+  <div class="auth-left">
+    <div class="auth-left-logo">Hoodies</div>
+    <h2>Your Style,<br>Your Statement.</h2>
+    <p>Sign in to save your favourite pieces to My Closet, track your orders, and get personalized recommendations.</p>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="auth-right">
+    <div class="auth-box" id="login-box">
+      <h1>Welcome back</h1>
+      <p>Sign in to your account</p>
+
+      <div id="auth-error" style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:0.75rem 1rem;border-radius:8px;font-size:0.82rem;display:none;margin-bottom:1rem"></div>
+
+      <div class="form-group" style="margin-bottom:1rem">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="login-email" placeholder="you@email.com"/>
+      </div>
+      <div class="form-group" style="margin-bottom:1.5rem">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="login-password" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+
+      <button class="btn btn-purple btn-full btn-lg" onclick="doLogin()" id="login-btn">Sign In</button>
+
+      <div class="auth-divider">or</div>
+
+      <button class="btn btn-ghost btn-full" onclick="showRegister()">Create a new account</button>
+
+      <p class="auth-switch"><a href="index.html">Continue as guest</a></p>
+    </div>
+
+    <!-- REGISTER BOX -->
+    <div class="auth-box" id="register-box" style="display:none">
+      <h1>Create account</h1>
+      <p>Join HOODIES for a personalised experience</p>
+
+      <div id="reg-error" style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:0.75rem 1rem;border-radius:8px;font-size:0.82rem;display:none;margin-bottom:1rem"></div>
+
+      <div class="form-row-2c" style="margin-bottom:1rem">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" class="form-input" id="reg-firstname" placeholder="John"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" class="form-input" id="reg-lastname" placeholder="Doe"/>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:1rem">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="reg-email" placeholder="you@email.com"/>
+      </div>
+      <div class="form-group" style="margin-bottom:1rem">
+        <label class="form-label">Phone</label>
+        <input type="tel" class="form-input" id="reg-phone" placeholder="+234 800 000 0000"/>
+      </div>
+      <div class="form-group" style="margin-bottom:1.5rem">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="reg-password" placeholder="Min 8 characters"/>
+      </div>
+
+      <button class="btn btn-purple btn-full btn-lg" onclick="doRegister()" id="reg-btn">Create Account</button>
+      <p class="auth-switch">Already have an account? <a href="#" onclick="showLogin()">Sign in</a></p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script>
+  // If already logged in, redirect
+  async function checkAuth() {
+    const user = await getUser();
+    if (user) window.location.href = 'closet.html';
+  }
+  checkAuth();
+
+  function showRegister() {
+    document.getElementById('login-box').style.display    = 'none';
+    document.getElementById('register-box').style.display = 'block';
+  }
+  function showLogin() {
+    document.getElementById('register-box').style.display = 'none';
+    document.getElementById('login-box').style.display    = 'block';
+  }
+
+  async function doLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const pass  = document.getElementById('login-password').value;
+    const errEl = document.getElementById('auth-error');
+    const btn   = document.getElementById('login-btn');
+
+    if (!email || !pass) { errEl.textContent = 'Please enter your email and password.'; errEl.style.display='block'; return; }
+    errEl.style.display = 'none';
+    btn.textContent = 'Signing in...'; btn.disabled = true;
+
+    const { error } = await getSB().auth.signInWithPassword({ email, password: pass });
+    if (error) {
+      errEl.textContent = error.message;
+      errEl.style.display = 'block';
+      btn.textContent = 'Sign In'; btn.disabled = false;
+    } else {
+      window.location.href = new URLSearchParams(window.location.search).get('next') || 'closet.html';
+    }
+  }
+
+  async function doRegister() {
+    const firstName = sanitize(document.getElementById('reg-firstname').value.trim());
+    const lastName  = sanitize(document.getElementById('reg-lastname').value.trim());
+    const email     = document.getElementById('reg-email').value.trim();
+    const phone     = document.getElementById('reg-phone').value.trim();
+    const pass      = document.getElementById('reg-password').value;
+    const errEl     = document.getElementById('reg-error');
+    const btn       = document.getElementById('reg-btn');
+
+    if (!firstName || !email || !pass) { errEl.textContent = 'Please fill in all required fields.'; errEl.style.display='block'; return; }
+    if (!isValidEmail(email)) { errEl.textContent = 'Please enter a valid email.'; errEl.style.display='block'; return; }
+    if (pass.length < 8) { errEl.textContent = 'Password must be at least 8 characters.'; errEl.style.display='block'; return; }
+    errEl.style.display = 'none';
+    btn.textContent = 'Creating account...'; btn.disabled = true;
+
+    const { data, error } = await getSB().auth.signUp({
+      email, password: pass,
+      options: { data: { first_name: firstName, last_name: lastName, phone } }
+    });
+
+    if (error) {
+      errEl.textContent = error.message;
+      errEl.style.display = 'block';
+      btn.textContent = 'Create Account'; btn.disabled = false;
+    } else {
+      // Save to customers table
+      try {
+        await getSB().from('customers').insert({ id: data.user.id, first_name: firstName, last_name: lastName, email, phone, created_at: new Date().toISOString() });
+      } catch(e) { console.warn('Customer row insert failed:', e); }
+      toast('Account created! Check your email to verify.');
+      setTimeout(() => { window.location.href = 'closet.html'; }, 1500);
+    }
+  }
+</script>
+</body>
+</html>

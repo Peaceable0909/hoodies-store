@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Closet — HOODIES</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">Hoodies</a>
+  <div class="nav-links">
+    <a href="catalog.html">Catalog</a>
+    <a href="design.html">Design Your Own</a>
+    <a href="closet.html" class="active">My Closet</a>
+  </div>
+  <div class="nav-right">
+    <a href="cart.html" class="nav-icon-btn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <span class="cart-badge">0</span>
+    </a>
+    <button class="nav-user-btn" onclick="signOut()" id="signout-btn">Sign Out</button>
+  </div>
+</nav>
+
+<div class="closet-page">
+  <div class="closet-header">
+    <h1>My Closet</h1>
+    <p style="color:var(--gray);margin-top:0.4rem" id="closet-sub">Your saved pieces</p>
+  </div>
+
+  <div class="closet-content" id="closet-content">
+    <div class="loading-center"><div class="spinner"></div><p>Loading your closet...</p></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+<script>
+  async function init() {
+    const user = await getUser();
+    if (!user) { window.location.href = 'login.html?next=closet.html'; return; }
+
+    // Update sub heading with name
+    const name = user.user_metadata?.first_name || user.email;
+    document.getElementById('closet-sub').textContent = `Welcome back, ${name}`;
+
+    const saved  = await dbClosetGet(user.id);
+    const content = document.getElementById('closet-content');
+    const cur     = getCurrency();
+
+    if (!saved.length) {
+      content.innerHTML = `<div class="closet-empty"><h2>Your closet is empty</h2><p>Save items while browsing to find them here.</p><a href="catalog.html" class="btn btn-purple" style="margin-top:1rem">Browse Catalog</a></div>`;
+      return;
+    }
+
+    const colors_parse = v => { try { return typeof v==='string' ? JSON.parse(v) : (v||[]); } catch { return []; } };
+
+    content.innerHTML = `<div class="product-grid" style="padding:2rem 0">
+      ${saved.map(item => {
+        const p = item.products;
+        if (!p) return '';
+        const colors = colors_parse(p.colors);
+        return `<div class="product-card">
+          <div class="product-card-img" style="cursor:pointer" onclick="location='product.html?id=${p.id}'">
+            ${p.image_url ? `<img src="${p.image_url}" alt="${p.name}"/>` : `<div class="product-card-img-placeholder"><span>${p.category}</span></div>`}
+            <button class="product-card-save" onclick="event.stopPropagation();removeItem('${user.id}','${p.id}',this)" title="Remove from Closet" style="background:var(--red);color:white">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="product-card-info">
+            <div class="product-card-cat">${p.category}</div>
+            <div class="product-card-name">${p.name}</div>
+            <div class="product-card-price" data-ngn="${p.price_ngn}">${fmtPrice(p.price_ngn, cur)}</div>
+            <div style="display:flex;gap:0.5rem;margin-top:0.8rem">
+              <a href="product.html?id=${p.id}" class="btn btn-purple btn-sm" style="flex:1;text-align:center">View</a>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  async function removeItem(userId, productId, btn) {
+    try { await dbClosetRemove(userId, productId); btn.closest('.product-card').remove(); toast('Removed from closet'); }
+    catch(e) { toast('Could not remove item', 'error'); }
+  }
+
+  init();
+</script>
+</body>
+</html>

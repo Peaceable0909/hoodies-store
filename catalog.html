@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Catalog — HOODIES</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">Hoodies</a>
+  <div class="nav-links">
+    <a href="index.html">Catalog</a>
+    <a href="design.html">Design Your Own</a>
+    <a href="closet.html">My Closet</a>
+  </div>
+  <div class="nav-right">
+    <div class="currency-sw">
+      <button class="cur-btn active" data-c="NGN" onclick="setCurrencyPref('NGN')">NGN</button>
+      <button class="cur-btn" data-c="USD" onclick="setCurrencyPref('USD')">USD</button>
+    </div>
+    <a href="cart.html" class="nav-icon-btn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <span class="cart-badge">0</span>
+    </a>
+    <a href="login.html" class="nav-icon-btn" id="user-btn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </a>
+  </div>
+</nav>
+
+<div class="catalog-page-header">
+  <div style="max-width:1200px;margin:0 auto">
+    <h1 id="page-title">All Products</h1>
+    <p style="color:var(--gray);font-size:0.85rem;margin-top:0.4rem" id="page-sub">Discover our exclusive range</p>
+  </div>
+</div>
+
+<div style="max-width:1200px;margin:0 auto;padding:0 2.5rem">
+  <!-- FILTERS -->
+  <div class="filter-bar" id="filter-bar">
+    <button class="filter-chip active" data-cat="all">All</button>
+    <button class="filter-chip" data-cat="hoodies">Hoodies</button>
+    <button class="filter-chip" data-cat="polos">Polos</button>
+    <button class="filter-chip" data-cat="tracksuits">Tracksuits</button>
+    <button class="filter-chip" data-cat="caps">Caps</button>
+    <button class="filter-chip" data-cat="gymwear">Gym Wear</button>
+  </div>
+
+  <!-- GRID -->
+  <div class="product-grid" id="product-grid" style="padding-bottom:4rem">
+    <div class="skeleton" style="height:380px;border-radius:12px"></div>
+    <div class="skeleton" style="height:380px;border-radius:12px"></div>
+    <div class="skeleton" style="height:380px;border-radius:12px"></div>
+    <div class="skeleton" style="height:380px;border-radius:12px"></div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-bottom">
+      <span>© 2024 HOODIES. Crafted for your unique fit.</span>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a><a href="#">Terms of Service</a>
+        <a href="#">Shipping Info</a><a href="https://wa.me/2348024100995">Contact Us</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/db.js"></script>
+<script>
+  let allProducts = [];
+  let currentCat = new URLSearchParams(window.location.search).get('cat') || 'all';
+  let currentUser = null;
+
+  async function init() {
+    currentUser = await getUser();
+    if (currentUser) { document.getElementById('user-btn').href = 'closet.html'; }
+
+    // Set active filter
+    document.querySelectorAll('.filter-chip').forEach(b => {
+      b.classList.toggle('active', b.dataset.cat === currentCat);
+    });
+
+    // Update header
+    const catNames = { all:'All Products', hoodies:'Bespoke Hoodies', polos:'Custom Polos', tracksuits:'Tracksuits', caps:'House Sport Caps', gymwear:'Performance Gym Wear' };
+    if (currentCat !== 'all') document.getElementById('page-title').textContent = catNames[currentCat] || currentCat;
+
+    allProducts = await dbProducts();
+    render(currentCat);
+  }
+
+  function render(cat) {
+    const grid = document.getElementById('product-grid');
+    const cur  = getCurrency();
+    const list = cat === 'all' ? allProducts : allProducts.filter(p => p.category === cat);
+
+    if (!list.length) {
+      grid.innerHTML = '<div class="loading-center" style="grid-column:1/-1"><p>No products in this category yet.</p><a href="index.html" class="btn btn-purple btn-sm" style="margin-top:1rem">Back to Catalog</a></div>';
+      return;
+    }
+
+    const colors_parse = v => { try { return typeof v === 'string' ? JSON.parse(v) : (v||[]); } catch { return []; } };
+
+    grid.innerHTML = list.map(p => {
+      const colors = colors_parse(p.colors);
+      return `
+        <div class="product-card" onclick="location='product.html?id=${p.id}'">
+          <div class="product-card-img">
+            ${p.image_url
+              ? `<img src="${p.image_url}" alt="${p.name}"/>`
+              : `<div class="product-card-img-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="1.5" opacity="0.3"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>${p.category}</span></div>`}
+            ${p.featured ? '<span class="product-card-badge">New</span>' : ''}
+            <button class="product-card-save" onclick="event.stopPropagation();saveItem('${p.id}')" title="Save to Closet">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            </button>
+          </div>
+          <div class="product-card-info">
+            <div class="product-card-cat">${p.category}</div>
+            <div class="product-card-name">${p.name}</div>
+            <div class="product-card-price price-display" data-ngn="${p.price_ngn}">${fmtPrice(p.price_ngn, cur)}</div>
+            <div class="product-card-colors">
+              ${colors.slice(0,5).map(c=>`<span class="color-dot-sm" style="background:${c}"></span>`).join('')}
+              ${colors.length > 5 ? `<span style="font-size:0.65rem;color:var(--gray)">+${colors.length-5}</span>` : ''}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  async function saveItem(productId) {
+    if (!currentUser) { toast('Sign in to save items to your closet'); location.href = 'login.html'; return; }
+    try { await dbClosetAdd(currentUser.id, productId); toast('Saved to your closet!'); }
+    catch(e) { toast('Could not save item', 'error'); }
+  }
+
+  document.querySelectorAll('.filter-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCat = btn.dataset.cat;
+      render(currentCat);
+    });
+  });
+
+  init();
+</script>
+</body>
+</html>
