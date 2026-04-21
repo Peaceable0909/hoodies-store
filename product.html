@@ -3,69 +3,94 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Product — HOODIES Kinetic Atelier</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Product — HOODIES</title>
   <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
 
 <nav class="nav">
-  <span class="nav-logo">HOODIES</span>
+  <a href="index.html" class="nav-logo">Hoodies</a>
   <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="products.html">Shop</a>
-    <a href="product.html" class="active">Customize</a>
-    <a href="#">About</a>
+    <a href="catalog.html">Catalog</a>
+    <a href="design.html">Design Your Own</a>
+    <a href="closet.html">My Closet</a>
   </div>
   <div class="nav-right">
-    <div class="currency-switcher">
-      <button class="currency-btn" data-currency="NGN" onclick="setCurrency('NGN')">₦</button>
-      <button class="currency-btn" data-currency="USD" onclick="setCurrency('USD')">$</button>
+    <div class="currency-sw">
+      <button class="cur-btn active" data-c="NGN" onclick="setCurrencyPref('NGN')">NGN</button>
+      <button class="cur-btn" data-c="USD" onclick="setCurrencyPref('USD')">USD</button>
     </div>
-    <a href="cart.html" class="cart-link">🛍 <span class="cart-badge" style="display:none">0</span></a>
+    <a href="cart.html" class="nav-icon-btn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <span class="cart-badge">0</span>
+    </a>
+    <a href="login.html" class="nav-icon-btn" id="user-btn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </a>
   </div>
 </nav>
 
 <div id="product-page">
-  <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding-top:64px">
-    <div class="loading-spinner"></div>
+  <div class="loading-center" style="min-height:80vh;padding-top:var(--nav-h)">
+    <div class="spinner"></div>
+    <p>Loading product...</p>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<footer class="footer">
-  <div class="footer-grid">
-    <div class="footer-brand"><span class="nav-logo" style="display:block;margin-bottom:0.8rem">HOODIES</span><p>Crafting the future of street-ready kinetics since 2024.</p></div>
-    <div class="footer-col"><h4>Experience</h4><a href="#">Privacy Policy</a><a href="#">Terms of Service</a></div>
-    <div class="footer-col"><h4>Support</h4><a href="#">Shipping & Returns</a><a href="#">Contact</a></div>
-    <div class="footer-col"><h4>Newsletter</h4><div class="email-form"><input type="email" placeholder="Email Address" class="email-input"/><button class="email-btn">→</button></div></div>
+<!-- TRY-ON MODAL -->
+<div id="tryon-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center;padding:2rem">
+  <div style="background:white;border-radius:20px;padding:2rem;max-width:480px;width:100%;position:relative">
+    <button onclick="document.getElementById('tryon-modal').style.display='none'" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--gray)">✕</button>
+    <h3 style="font-family:var(--font-display);font-size:1.4rem;font-weight:900;color:var(--purple-dark);margin-bottom:0.5rem">Virtual Try-On</h3>
+    <p style="font-size:0.82rem;color:var(--gray);margin-bottom:1.5rem">Upload a photo to see how this piece looks on you.</p>
+    <div class="upload-zone" style="padding:2rem" id="tryon-zone">
+      <input type="file" accept="image/*" onchange="handleTryonUpload(this)"/>
+      <div class="upload-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5b21b6" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+      <p class="upload-title" style="font-size:0.9rem">Upload your photo</p>
+      <p class="upload-sub">JPG or PNG — max 5MB</p>
+    </div>
+    <div id="tryon-preview" style="display:none;margin-top:1rem">
+      <img id="tryon-img" style="width:100%;border-radius:10px;max-height:300px;object-fit:contain"/>
+      <p style="text-align:center;font-size:0.78rem;color:var(--gray);margin-top:0.8rem">Your photo uploaded. Send to WhatsApp for our team to superimpose the garment.</p>
+      <button class="btn btn-green btn-full btn-lg" style="margin-top:1rem" onclick="sendTryonWhatsApp()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Send to WhatsApp for Try-On
+      </button>
+    </div>
   </div>
-  <div class="footer-bottom"><span>© 2024 HOODIES KINETIC ATELIER. ALL RIGHTS RESERVED.</span></div>
-</footer>
+</div>
 
+<script src="https://checkout.flutterwave.com/v3.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/config.js"></script>
 <script src="js/db.js"></script>
-<script src="js/app.js"></script>
 <script>
   let product = null;
-  let selectedColor, selectedSize;
+  let selectedColor = null;
+  let selectedSize  = null;
   let qty = 1;
+  let currentUser = null;
+  let activeImgMode = 'mannequin'; // 'mannequin' | 'original'
+
+  function parseJ(v, fb) { try { return typeof v==='string' ? JSON.parse(v) : (v||fb); } catch { return fb; } }
 
   async function init() {
+    currentUser = await getUser();
+    if (currentUser) document.getElementById('user-btn').href = 'closet.html';
+
     const pid = new URLSearchParams(window.location.search).get('id');
-    if (pid) {
-      product = await dbGetProduct(pid);
-    } else {
+    product = pid ? await dbProduct(pid) : null;
+
+    if (!product) {
       // Load first product as default
-      const all = await dbGetProducts();
+      const all = await dbProducts();
       product = all[0] || null;
     }
 
     if (!product) {
-      document.getElementById('product-page').innerHTML = '<p style="padding:8rem 3rem;text-align:center;color:var(--gray)">Product not found. <a href="products.html" style="text-decoration:underline">Back to shop →</a></p>';
+      document.getElementById('product-page').innerHTML = '<div class="loading-center" style="padding-top:var(--nav-h)"><p>Product not found.</p><a href="catalog.html" class="btn btn-purple btn-sm" style="margin-top:1rem">Back to Catalog</a></div>';
       return;
     }
 
@@ -73,154 +98,234 @@
   }
 
   function buildPage(p) {
-    const colors = typeof p.colors === 'string' ? JSON.parse(p.colors) : p.colors;
-    const sizes = typeof p.sizes === 'string' ? JSON.parse(p.sizes) : p.sizes;
-    selectedColor = colors[0];
-    selectedSize = sizes[0];
-    const cur = getCurrentCurrency();
+    const colors = parseJ(p.colors, []);
+    const sizes  = parseJ(p.sizes,  []);
+    selectedColor = colors[0] || null;
+    selectedSize  = sizes[0]  || null;
+    const cur = getCurrency();
+
+    // Breadcrumb category name
+    const catMap = { hoodies:'Hoodies', polos:'Shirts', tracksuits:'Tracksuits', caps:'Caps', gymwear:'Gym Wear' };
 
     document.getElementById('product-page').innerHTML = `
       <div class="product-page">
-        <div class="product-layout">
+        <div class="breadcrumb">
+          <a href="catalog.html">Catalog</a>
+          <span>›</span>
+          <a href="catalog.html?cat=${p.category}">${catMap[p.category]||p.category}</a>
+          <span>›</span>
+          <strong style="color:var(--black)">${p.name}</strong>
+        </div>
 
+        <div class="product-layout">
           <!-- GALLERY -->
           <div class="product-gallery">
-            <div class="main-image" id="main-img" style="background:${colors[0]}18">
-              <span class="release-tag">LIMITED RELEASE</span>
-              <span id="emoji-display" style="font-size:10rem;transition:all 0.3s">${p.emoji}</span>
-              <div class="preview-text" id="text-preview"></div>
+            <!-- Main image -->
+            <div class="product-main-img" id="main-img-wrap" style="background:${colors[0]||'var(--purple-pale)'}18">
+              ${p.mannequin_url
+                ? `<img id="main-img" src="${p.mannequin_url}" alt="${p.name}"/>`
+                : p.image_url
+                  ? `<img id="main-img" src="${p.image_url}" alt="${p.name}"/>`
+                  : `<div class="product-main-img-placeholder"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>No image yet</span></div>`}
             </div>
-            <div class="thumb-row">
-              <div class="thumb active">${p.emoji}</div>
-              <div class="thumb">🔍</div>
-              <div class="thumb">🔄</div>
+
+            <!-- Image toggle row -->
+            <div class="product-thumbs" id="thumb-row">
+              ${p.mannequin_url ? `<div class="product-thumb active" id="thumb-mannequin" onclick="switchImg('mannequin')"><img src="${p.mannequin_url}" alt="Mannequin view"/></div>` : ''}
+              ${p.image_url     ? `<div class="product-thumb ${!p.mannequin_url?'active':''}" id="thumb-original"  onclick="switchImg('original')"><img src="${p.image_url}" alt="Original view"/></div>` : ''}
+            </div>
+
+            <!-- See it worn label -->
+            ${p.image_url ? `<div class="see-it-on" onclick="switchImg('original')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              See it in real life
+            </div>` : ''}
+
+            <!-- Virtual try-on -->
+            <div class="tryon-box" onclick="document.getElementById('tryon-modal').style.display='flex'">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5b21b6" stroke-width="2" style="margin:0 auto 0.5rem"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <p>Virtual Try-On</p>
+              <span>Upload your photo</span>
             </div>
           </div>
 
           <!-- INFO -->
-          <div class="product-info">
-            <p class="product-info-tag">${p.category.toUpperCase()}</p>
-            <h1 class="product-info-name">${p.name}</h1>
-            <p class="product-info-price price-display" data-ngn="${p.price_ngn}" id="main-price">${formatPrice(p.price_ngn, cur)}</p>
-            <p class="product-info-price-usd" id="alt-price">${cur==='NGN' ? formatPrice(p.price_ngn,'USD') + ' USD' : formatPrice(p.price_ngn,'NGN') + ' NGN'}</p>
-            <p class="product-info-desc">${p.description}</p>
+          <div class="product-info-col">
+            <span class="product-collection-tag">THE TAILORED COLLECTION</span>
+            <h1 class="product-name">${p.name}</h1>
+            <div class="product-price" id="display-price" data-ngn="${p.price_ngn}">${fmtPrice(p.price_ngn, cur)}</div>
+            <p class="product-desc">${p.description}</p>
 
             <!-- COLOR -->
-            <div class="field-group">
-              <div class="field-label">SELECT COLOR <span id="color-name" style="font-weight:400;letter-spacing:0;text-transform:none;font-size:0.75rem;color:var(--gray)"></span></div>
-              <div class="color-selector">
+            <div style="margin-bottom:1.2rem">
+              <div class="picker-label">Color <span id="color-name">${selectedColor||''}</span></div>
+              <div class="color-picker" id="color-picker">
                 ${colors.map((c,i) => `
-                  <button class="cswatch ${i===0?'selected':''}" data-color="${c}"
-                    style="background:${c};${c==='#ffffff'?'border:2px solid #ccc':''}"
-                    onclick="selectColor(this,'${c}')"></button>`).join('')}
+                  <button class="color-swatch ${i===0?'selected':''}" data-color="${c}"
+                    style="background:${c};${c==='#ffffff'?'border:3px solid #d1d5db':''}"
+                    onclick="pickColor(this,'${c}')"></button>`).join('')}
               </div>
             </div>
 
             <!-- SIZE -->
-            <div class="field-group">
-              <div class="field-label">SELECT SIZE <a href="#">SIZE GUIDE</a></div>
-              <div class="size-selector">
+            <div style="margin-bottom:1.2rem">
+              <div class="picker-label">
+                Size
+                <a href="#" style="font-size:0.75rem;color:var(--purple)">Size Guide</a>
+              </div>
+              <div class="size-picker">
                 ${sizes.map((s,i) => `
                   <button class="size-btn ${i===0?'selected':''}" data-size="${s}"
-                    onclick="selectSize(this,'${s}')">${s}</button>`).join('')}
+                    onclick="pickSize(this,'${s}')">${s}</button>`).join('')}
               </div>
             </div>
 
-            <!-- CUSTOM TEXT -->
-            <div class="field-group">
-              <div class="field-label">ADD YOUR CUSTOM TEXT / LOGO</div>
-              <input type="text" class="custom-input" id="custom-text" maxlength="20"
-                placeholder="Type here..." oninput="onTextInput(this.value)"/>
-              <div class="char-count"><span id="char-count">0</span> / 20</div>
+            <!-- CUSTOM FIT -->
+            <div class="custom-fit-box">
+              <div class="custom-fit-toggle" onclick="toggleFit()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                Custom Fit — Enter Manual Measurements
+                <svg id="fit-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:auto;transition:transform 0.2s"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="custom-fit-fields hidden" id="fit-fields">
+                <input type="number" class="form-input" id="fit-chest" placeholder="Chest (inches)"/>
+                <input type="number" class="form-input" id="fit-sleeve" placeholder="Sleeve Length"/>
+                <input type="number" class="form-input full-span" id="fit-hem" placeholder="Desired Hem Drop (Torso Length)"/>
+              </div>
             </div>
 
             <!-- QTY -->
-            <div class="field-group">
-              <div class="field-label">QUANTITY</div>
+            <div style="margin:1.2rem 0 0.5rem">
+              <div class="picker-label">Quantity</div>
               <div class="qty-row">
-                <button class="qty-btn" id="qty-minus">−</button>
-                <span class="qty-val" id="qty-val">1</span>
-                <button class="qty-btn" id="qty-plus">+</button>
+                <button class="qty-btn-ctrl" id="qty-minus">−</button>
+                <span class="qty-val" id="qty-display">1</span>
+                <button class="qty-btn-ctrl" id="qty-plus">+</button>
               </div>
             </div>
 
-            <div class="field-group" style="padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
-              <div style="display:flex;justify-content:space-between;font-family:var(--font-display);font-size:1rem;font-weight:700">
-                <span>TOTAL</span>
-                <span id="total-price">${formatPrice(p.price_ngn, cur)}</span>
+            <div style="padding:0.8rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:1.5rem;display:flex;justify-content:space-between;font-weight:800;font-size:1rem">
+              <span>Total</span>
+              <span id="total-display">${fmtPrice(p.price_ngn, cur)}</span>
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="product-actions">
+              <button class="btn btn-yellow btn-full btn-lg" id="add-cart-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                Add to Cart
+              </button>
+              <button class="btn btn-green btn-full btn-lg" onclick="orderViaWhatsApp()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                Order via WhatsApp
+              </button>
+            </div>
+
+            <!-- ACCORDION -->
+            <div class="material-accordion" style="margin-top:2rem">
+              <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAcc(this)">Details & Care <span>+</span></div>
+                <div class="accordion-body"><p>450GSM heavyweight cotton. Structured box-fit silhouette. 90% Cotton, 10% Polyester. Brushed fleece interior. Machine wash cold, tumble dry low.</p></div>
               </div>
-            </div>
-
-            <div class="add-row">
-              <button class="btn-full" id="add-btn">Add to Cart</button>
-            </div>
-
-            <div class="shipping-badges">
-              <span class="sh-badge">✦ <strong>Ships in 3–5 business days</strong></span>
-              <span class="sh-badge">✦ <strong>Free nationwide delivery</strong></span>
-            </div>
-
-            <!-- MATERIAL -->
-            <div class="material-section">
-              <h3>Artisan Craftsmanship</h3>
-              <p>The Signature Custom Hoodie is more than a garment — it's a blank canvas for your identity. Engineered with 450GSM heavyweight cotton, this piece features a structured box-fit silhouette that retains its shape wash after wash. Every stitch is placed with precision at our Kinetic Atelier.</p>
-              <table class="material-table">
-                <tr><td>Fabric Weight</td><td>450 GSM (Heavy)</td></tr>
-                <tr><td>Composition</td><td>90% Cotton, 10% Poly</td></tr>
-                <tr><td>Finishing</td><td>Brushed Fleece Interior</td></tr>
-                <tr><td>Customization</td><td>Embroidery Ready</td></tr>
-              </table>
-              <div class="feature-grid">
-                <div class="feature-card"><h4>100% Organic Cotton</h4><p>Sustainably sourced fibers for a premium skin feel.</p></div>
-                <div class="feature-card"><h4>Double-Lined Hood</h4><p>Enhanced structure and warmth without the bulk.</p></div>
+              <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAcc(this)">Shipping & Returns <span>+</span></div>
+                <div class="accordion-body"><p>Ships in 3–5 business days. Free nationwide delivery on all orders. Custom orders are final sale — please review size guide before ordering.</p></div>
               </div>
             </div>
           </div>
         </div>
-      </div>`;
+      </div>
+    `;
 
-    // Bindings
-    window.selectColor = (btn, color) => {
-      document.querySelectorAll('.cswatch').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      selectedColor = color;
-      document.getElementById('main-img').style.background = color + '18';
-    };
+    // Qty controls
+    document.getElementById('qty-minus').onclick = () => { if (qty>1) { qty--; updateQty(); } };
+    document.getElementById('qty-plus').onclick  = () => { qty++; updateQty(); };
 
-    window.selectSize = (btn, size) => {
-      document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      selectedSize = size;
-    };
-
-    window.onTextInput = (val) => {
-      document.getElementById('text-preview').textContent = val;
-      document.getElementById('char-count').textContent = val.length;
-    };
-
-    document.getElementById('qty-minus').onclick = () => {
-      if (qty > 1) { qty--; updateTotal(); }
-    };
-    document.getElementById('qty-plus').onclick = () => {
-      qty++; updateTotal();
-    };
-
-    function updateTotal() {
-      document.getElementById('qty-val').textContent = qty;
-      document.getElementById('total-price').textContent = formatPrice(p.price_ngn * qty, getCurrentCurrency());
-    }
-
-    document.getElementById('add-btn').onclick = () => {
-      const customText = sanitize(document.getElementById('custom-text').value);
+    // Add to cart
+    document.getElementById('add-cart-btn').onclick = () => {
+      const measurements = {
+        chest: document.getElementById('fit-chest')?.value || '',
+        sleeve: document.getElementById('fit-sleeve')?.value || '',
+        hem: document.getElementById('fit-hem')?.value || ''
+      };
       addToCart({
         id: p.id, name: p.name, price_ngn: p.price_ngn,
         color: selectedColor, size: selectedSize,
-        qty, emoji: p.emoji,
-        subtotal_ngn: p.price_ngn * qty,
-        customText
+        qty, subtotal_ngn: p.price_ngn * qty,
+        image_url: p.image_url || p.mannequin_url || null,
+        category: p.category,
+        measurements: Object.values(measurements).some(v=>v) ? measurements : null,
+        customText: ''
       });
-      showToast('Added to cart!');
+      toast('Added to cart!');
     };
+  }
+
+  function pickColor(btn, color) {
+    document.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedColor = color;
+    document.getElementById('color-name').textContent = color;
+    document.getElementById('main-img-wrap').style.background = color + '18';
+  }
+
+  function pickSize(btn, size) {
+    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedSize = size;
+  }
+
+  function updateQty() {
+    document.getElementById('qty-display').textContent = qty;
+    const total = product.price_ngn * qty;
+    document.getElementById('total-display').textContent = fmtPrice(total, getCurrency());
+  }
+
+  function switchImg(mode) {
+    activeImgMode = mode;
+    const mainImg = document.getElementById('main-img');
+    const tM = document.getElementById('thumb-mannequin');
+    const tO = document.getElementById('thumb-original');
+    if (tM) tM.classList.toggle('active', mode === 'mannequin');
+    if (tO) tO.classList.toggle('active', mode === 'original');
+    if (mainImg) {
+      mainImg.src = mode === 'mannequin' ? (product.mannequin_url || product.image_url) : (product.image_url || product.mannequin_url);
+    }
+  }
+
+  function toggleFit() {
+    const fields = document.getElementById('fit-fields');
+    const arrow  = document.getElementById('fit-arrow');
+    fields.classList.toggle('hidden');
+    arrow.style.transform = fields.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+  }
+
+  function toggleAcc(header) {
+    const body  = header.nextElementSibling;
+    const isOpen = body.classList.contains('open');
+    document.querySelectorAll('.accordion-body').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('.accordion-header span').forEach(s => s.textContent = '+');
+    if (!isOpen) { body.classList.add('open'); header.querySelector('span').textContent = '−'; }
+  }
+
+  function orderViaWhatsApp() {
+    waProduct(`${product.name} — Color: ${selectedColor||'N/A'}, Size: ${selectedSize||'N/A'}, Qty: ${qty}`);
+  }
+
+  function handleTryonUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('tryon-img').src = e.target.result;
+      document.getElementById('tryon-preview').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function sendTryonWhatsApp() {
+    const msg = encodeURIComponent(`Hi! I uploaded a photo for virtual try-on of: ${product.name}\n\nColor: ${selectedColor||'N/A'}\nSize: ${selectedSize||'N/A'}\n\nPlease help me see how it looks!`);
+    window.open(`https://wa.me/${CONFIG.WHATSAPP}?text=${msg}`, '_blank');
   }
 
   init();
