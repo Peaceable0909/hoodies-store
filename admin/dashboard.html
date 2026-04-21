@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — HOODIES Admin</title>
+  <link rel="stylesheet" href="admin.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-name">Hoodies</div>
+    <div class="sidebar-brand-sub">E-Commerce Admin</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section-label">Main</div>
+    <a href="dashboard.html" class="nav-item active">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="orders.html" class="nav-item">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Orders
+      <span class="nav-badge" id="pending-badge">0</span>
+    </a>
+    <a href="inventory.html" class="nav-item">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+      Inventory
+    </a>
+    <a href="customers.html" class="nav-item">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Customers
+    </a>
+    <a href="analytics.html" class="nav-item">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Analytics
+    </a>
+    <div class="sidebar-section-label" style="margin-top:0.5rem">Design</div>
+    <a href="design-requests.html" class="nav-item">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Design Requests
+    </a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">AD</div>
+      <div>
+        <div class="sidebar-user-name">Admin User</div>
+        <div class="sidebar-user-role">System Manager</div>
+      </div>
+    </div>
+    <button class="btn-signout" onclick="adminLogout()">Sign Out</button>
+  </div>
+</aside>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-search">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" placeholder="Search analytics..."/>
+  </div>
+  <div class="topbar-right">
+    <button class="btn-add-item" onclick="window.location='inventory.html'">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add New Item
+    </button>
+    <button class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="notif-dot"></span>
+    </button>
+    <button class="topbar-icon-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    </button>
+    <div class="topbar-user">
+      <div class="topbar-avatar">AD</div>
+      <div>
+        <div style="font-size:0.8rem;font-weight:600">Admin User</div>
+        <div style="font-size:0.65rem;color:var(--gray)">System Manager</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="page-content">
+    <div class="page-header">
+      <h1>Admin Dashboard</h1>
+      <p>Welcome back. Here is what's happening with your store today.</p>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stat-row" id="stat-row">
+      <div class="card stat-card">
+        <div class="stat-card-left">
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-value" id="s-revenue">—</div>
+          <div class="stat-change up" id="s-rev-change">Loading...</div>
+        </div>
+        <div class="stat-icon" style="background:#ede9fe">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5b21b6" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-card-left">
+          <div class="stat-label">Total Orders</div>
+          <div class="stat-value" id="s-orders">—</div>
+          <div class="stat-change up" id="s-ord-change">Loading...</div>
+        </div>
+        <div class="stat-icon" style="background:#fef3c7">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        </div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-card-left">
+          <div class="stat-label">Average Order Value</div>
+          <div class="stat-value" id="s-aov">—</div>
+          <div class="stat-change down" id="s-aov-change">Loading...</div>
+        </div>
+        <div class="stat-icon" style="background:#dcfce7">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem">
+
+      <!-- PRODUCT POPULARITY -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Product Popularity</div>
+          </div>
+          <button class="btn-icon" title="More options">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+          </button>
+        </div>
+        <div class="card-body" id="popularity-wrap">
+          <div class="loading-row"><div class="spinner"></div></div>
+        </div>
+        <div style="padding:0.5rem 1.5rem 1.2rem;border-top:1px solid var(--border)">
+          <a href="analytics.html" style="font-size:0.75rem;color:var(--purple);font-weight:600">View Detailed Inventory Report</a>
+        </div>
+      </div>
+
+      <!-- REVENUE TRENDS CHART -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Revenue Trends</div>
+          <div style="display:flex;gap:0.5rem">
+            <button class="tab-btn active" id="btn-30d" onclick="switchChart('30d')">Last 30 Days</button>
+            <button class="tab-btn" id="btn-6m" onclick="switchChart('6m')">Last 6 Months</button>
+          </div>
+        </div>
+        <div style="padding:1.2rem">
+          <div class="chart-wrap" style="height:180px">
+            <canvas id="revenue-chart"></canvas>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-top:1rem">
+            <div style="background:var(--purple-pale);border-radius:8px;padding:0.8rem">
+              <div style="font-size:0.65rem;font-weight:700;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.3rem">PEAK EARNINGS</div>
+              <div style="font-size:1.1rem;font-weight:900;color:var(--purple-dark)" id="peak-earn">—</div>
+              <div style="font-size:0.68rem;color:var(--green);font-weight:600" id="peak-change">+0%</div>
+            </div>
+            <div style="background:var(--purple-pale);border-radius:8px;padding:0.8rem">
+              <div style="font-size:0.65rem;font-weight:700;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.3rem">PROJECTED END</div>
+              <div style="font-size:1.1rem;font-weight:900;color:var(--purple-dark)" id="projected">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SYSTEM LOGS -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">System Logs</div>
+          <div class="card-subtitle">Real-time update on shop performance</div>
+        </div>
+        <button class="btn btn-yellow btn-sm" onclick="exportCSV()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download CSV
+        </button>
+      </div>
+      <div id="logs-wrap">
+        <div class="loading-row"><div class="spinner"></div><span>Loading logs...</span></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/db.js"></script>
+<script src="admin.js"></script>
+<script>
+  if (!adminGuard()) throw new Error('Unauthorized');
+
+  let revenueChart = null;
+  let analyticsData = null;
+
+  async function loadDashboard() {
+    const data = await dbAnalytics();
+    analyticsData = data;
+    const { revenue, avgOrder, totalOrders, totalCustomers, catCount, revByDay, days, orders } = data;
+
+    // Stat cards
+    document.getElementById('s-revenue').textContent  = fmt(revenue);
+    document.getElementById('s-orders').textContent   = totalOrders;
+    document.getElementById('s-aov').textContent      = fmt(avgOrder);
+    document.getElementById('s-rev-change').textContent  = '+12.5% vs last month';
+    document.getElementById('s-ord-change').textContent  = `+8.2% · ${totalCustomers} customers`;
+    document.getElementById('s-aov-change').textContent  = '-2.1% vs last month';
+
+    // Pending badge
+    const pending = orders.filter(o => o.status === 'paid').length;
+    document.getElementById('pending-badge').textContent = pending || '';
+    document.getElementById('pending-badge').style.display = pending ? 'inline-flex' : 'none';
+
+    // Popularity bars
+    const cats    = [ {k:'polos',cat:'Polos',color:'#5b21b6'}, {k:'gymwear',cat:'Gym Wear',color:'#16a34a'}, {k:'hoodies',cat:'Hoodies',color:'#f59e0b'}, {k:'caps',cat:'Caps',color:'#2563eb'}, {k:'tracksuits',cat:'Tracksuits',color:'#ea580c'} ];
+    const maxCat  = Math.max(...cats.map(c => catCount[c.k] || 0), 1);
+    document.getElementById('popularity-wrap').innerHTML = cats.map(c => {
+      const count = catCount[c.k] || 0;
+      const pct   = Math.round((count / maxCat) * 100);
+      return `<div class="progress-item">
+        <div class="progress-label"><span>${c.cat}</span><span style="color:${c.color};font-weight:700">${pct}%</span></div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;background:${c.color}"></div></div>
+      </div>`;
+    }).join('');
+
+    // Revenue chart
+    buildChart(days, days.map(d => revByDay[d] || 0));
+
+    // Peak and projected
+    const vals   = days.map(d => revByDay[d] || 0);
+    const peak   = Math.max(...vals);
+    const proj   = Math.round(revenue * 1.18);
+    document.getElementById('peak-earn').textContent  = fmt(peak);
+    document.getElementById('peak-change').textContent = '+18%';
+    document.getElementById('projected').textContent  = fmt(proj);
+
+    // System logs from recent orders
+    const logs = orders.slice(0, 8).map(o => ({
+      time:     fmtDateTime(o.created_at),
+      event:    o.items?.length ? `Order #${(o.reference||'').slice(-6)} — ${o.customer_name}` : `New Order from ${o.customer_name}`,
+      category: 'Sales',
+      status:   o.status,
+      impact:   '+' + fmt(o.total_ngn)
+    }));
+
+    const logsHtml = `
+      <div style="overflow-x:auto">
+        <table class="data-table" style="min-width:600px">
+          <thead><tr>
+            <th>TIMESTAMP</th><th>EVENT</th><th>CATEGORY</th><th>STATUS</th><th style="text-align:right">IMPACT</th>
+          </tr></thead>
+          <tbody>
+            ${logs.length ? logs.map(l => `<tr>
+              <td style="color:var(--gray);font-size:0.75rem">${l.time}</td>
+              <td style="font-weight:500">${l.event}</td>
+              <td><span class="badge badge-active" style="background:var(--blue-light);color:var(--blue)">${l.category}</span></td>
+              <td><span class="badge badge-${l.status}">${l.status}</span></td>
+              <td style="text-align:right;font-weight:700;color:var(--green)">${l.impact}</td>
+            </tr>`).join('') : `<tr><td colspan="5" style="text-align:center;color:var(--gray);padding:3rem">No orders yet. Share your store to get started.</td></tr>`}
+          </tbody>
+        </table>
+      </div>`;
+    document.getElementById('logs-wrap').innerHTML = logsHtml;
+  }
+
+  function buildChart(labels, data) {
+    const ctx = document.getElementById('revenue-chart').getContext('2d');
+    if (revenueChart) revenueChart.destroy();
+
+    const grad = ctx.createLinearGradient(0, 0, 0, 180);
+    grad.addColorStop(0, 'rgba(91,33,182,0.25)');
+    grad.addColorStop(1, 'rgba(91,33,182,0)');
+
+    revenueChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data,
+          borderColor: '#5b21b6',
+          borderWidth: 2,
+          backgroundColor: grad,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: '#5b21b6',
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: {
+          callbacks: { label: c => '₦' + c.raw.toLocaleString() },
+          backgroundColor: '#3b0764', titleColor: 'rgba(255,255,255,0.6)',
+          bodyColor: 'white', padding: 10, cornerRadius: 8
+        }},
+        scales: {
+          x: { grid: { display: false }, ticks: { maxTicksLimit: 6, font: { size: 10 }, color: '#9ca3af' } },
+          y: { grid: { color: '#f3f4f6' }, ticks: { callback: v => '₦' + (v/1000).toFixed(0) + 'k', font: { size: 10 }, color: '#9ca3af' } }
+        }
+      }
+    });
+  }
+
+  async function switchChart(mode) {
+    document.getElementById('btn-30d').classList.toggle('active', mode === '30d');
+    document.getElementById('btn-6m').classList.toggle('active', mode === '6m');
+    if (!analyticsData) return;
+
+    if (mode === '6m') {
+      // Build 6-month buckets
+      const months = Array.from({length:6}, (_,i) => {
+        const d = new Date(); d.setMonth(d.getMonth() - (5-i));
+        return d.toLocaleString('default',{month:'short'});
+      });
+      const monthKeys = Array.from({length:6}, (_,i) => {
+        const d = new Date(); d.setMonth(d.getMonth() - (5-i));
+        return d.toISOString().slice(0,7);
+      });
+      const revByMonth = {};
+      monthKeys.forEach(m => revByMonth[m] = 0);
+      analyticsData.orders.filter(o => o.status === 'paid').forEach(o => {
+        const m = (o.created_at||'').slice(0,7);
+        if (revByMonth[m] !== undefined) revByMonth[m] += (o.total_ngn||0);
+      });
+      buildChart(months, monthKeys.map(m => revByMonth[m]));
+    } else {
+      buildChart(analyticsData.days, analyticsData.days.map(d => analyticsData.revByDay[d]||0));
+    }
+  }
+
+  function exportCSV() {
+    if (!analyticsData?.orders?.length) { toast('No data to export', 'error'); return; }
+    const rows = [['Reference','Customer','Email','Phone','Items','Total NGN','Status','Date']];
+    analyticsData.orders.forEach(o => {
+      rows.push([o.reference||'', o.customer_name||'', o.customer_email||'', o.customer_phone||'', (o.items||[]).length, o.total_ngn||0, o.status||'', o.created_at?.slice(0,10)||'']);
+    });
+    const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+    const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv); a.download = 'hoodies-orders.csv'; a.click();
+    toast('CSV downloaded!', 'success');
+  }
+
+  loadDashboard();
+</script>
+</body>
+</html>
