@@ -4,31 +4,34 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Order Confirmed — HOODIES</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
 <nav class="nav">
-  <span class="nav-logo">HOODIES</span>
-  <div class="nav-links"><a href="index.html">Home</a><a href="products.html">Shop</a></div>
+  <a href="index.html" class="nav-logo">Hoodies</a>
+  <div class="nav-links"><a href="catalog.html">Catalog</a></div>
 </nav>
 
 <div class="success-page">
-  <div class="success-icon">✅</div>
+  <div class="success-check">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
   <h1>Order Confirmed!</h1>
-  <p id="success-msg">Your payment was successful. We're working on your custom order right away.</p>
-  <p class="success-ref" id="order-ref"></p>
-  <a href="products.html" class="btn-dark" style="margin-bottom:1rem">Continue Shopping</a>
-  <p style="font-size:0.78rem;color:var(--gray)">A confirmation will be sent to your email. We'll WhatsApp you with delivery updates.</p>
+  <p style="color:var(--gray);max-width:420px" id="success-msg">Your payment was successful. We're crafting your custom order right away.</p>
+  <div class="success-ref" id="order-ref"></div>
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center">
+    <a href="catalog.html" class="btn btn-purple btn-lg">Continue Shopping</a>
+    <a href="https://wa.me/2348024100995" target="_blank" class="btn btn-green btn-lg">Track on WhatsApp</a>
+  </div>
+  <p style="font-size:0.78rem;color:var(--gray);margin-top:1.5rem">A confirmation will be sent to your email. We'll WhatsApp you with delivery updates.</p>
 </div>
 
 <script>
   const p = new URLSearchParams(window.location.search);
-  const ref = p.get('ref');
+  const ref  = p.get('ref');
   const name = p.get('name');
-  if (ref) document.getElementById('order-ref').textContent = 'Order Reference: ' + ref;
-  if (name) document.getElementById('success-msg').textContent = `Thank you ${name}! Your payment was successful and we're crafting your custom order right away.`;
+  if (ref) document.getElementById('order-ref').textContent = 'Reference: ' + ref;
+  if (name) document.getElementById('success-msg').textContent = `Thank you ${name}! Your payment went through and we're working on your custom order.`;
 </script>
 </body>
 </html>
