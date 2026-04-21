@@ -4,189 +4,310 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Orders — HOODIES Admin</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css"/>
+  <link rel="stylesheet" href="admin.css"/>
 </head>
 <body>
 
-<div class="admin-layout">
-  <aside class="admin-sidebar">
-    <div class="admin-brand"><span>HOODIES</span><p>Admin Portal</p></div>
-    <nav class="admin-nav">
-      <a href="index.html"><span class="nav-icon">📊</span> Dashboard</a>
-      <a href="orders.html" class="active"><span class="nav-icon">📦</span> Orders</a>
-      <a href="products.html"><span class="nav-icon">👕</span> Products</a>
-      <a href="#" onclick="logout()"><span class="nav-icon">🚪</span> Sign Out</a>
-    </nav>
-  </aside>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand"><div class="sidebar-brand-name">Hoodies</div><div class="sidebar-brand-sub">E-Commerce Admin</div></div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section-label">Main</div>
+    <a href="dashboard.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="orders.html" class="nav-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>Orders</a>
+    <a href="inventory.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>Inventory</a>
+    <a href="customers.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Customers</a>
+    <a href="analytics.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Analytics</a>
+    <div class="sidebar-section-label" style="margin-top:0.5rem">Design</div>
+    <a href="design-requests.html" class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Design Requests</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-user"><div class="sidebar-avatar">AD</div><div><div class="sidebar-user-name">Admin User</div><div class="sidebar-user-role">System Manager</div></div></div>
+    <button class="btn-signout" onclick="adminLogout()">Sign Out</button>
+  </div>
+</aside>
 
-  <main class="admin-main">
-    <div class="admin-topbar">
-      <h1>Orders</h1>
-      <div style="display:flex;gap:0.8rem">
-        <select id="status-filter" class="admin-select" style="width:auto" onchange="filterOrders()">
-          <option value="all">All Status</option>
-          <option value="paid">Paid</option>
-          <option value="processing">Processing</option>
-          <option value="shipped">Shipped</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-      </div>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-search">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" placeholder="Search order ID, customer or product..." id="search-input" oninput="filterOrders()"/>
+  </div>
+  <div class="topbar-right">
+    <button class="btn btn-ghost btn-sm" onclick="exportOrders()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export
+    </button>
+    <div class="topbar-user">
+      <div class="topbar-avatar">AD</div>
+      <div><div style="font-size:0.8rem;font-weight:600">Admin User</div><div style="font-size:0.65rem;color:var(--gray)">Administrator</div></div>
     </div>
-
-    <div class="admin-card">
-      <div class="admin-card-header">
-        <h2>All Orders</h2>
-        <span id="order-count" style="font-size:0.78rem;color:var(--gray)"></span>
-      </div>
-      <div id="orders-wrap">
-        <div class="loading-state"><div class="loading-spinner"></div><p>Loading orders...</p></div>
-      </div>
-    </div>
-  </main>
+  </div>
 </div>
 
+<!-- MAIN -->
+<main class="main">
+  <div class="page-content">
+    <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+      <div><h1>Orders Management</h1></div>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem" id="order-summary">
+      <div class="card" style="padding:1.2rem">
+        <div style="font-size:0.68rem;font-weight:700;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem">TOTAL REVENUE</div>
+        <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;color:var(--purple-dark)" id="sum-rev">—</div>
+      </div>
+      <div class="card" style="padding:1.2rem">
+        <div style="font-size:0.68rem;font-weight:700;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem">AVERAGE ORDER VALUE</div>
+        <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;color:var(--purple-dark)" id="sum-aov">—</div>
+      </div>
+      <div class="card" style="padding:1.2rem">
+        <div style="font-size:0.68rem;font-weight:700;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.4rem">ORDER FULFILLMENT RATE</div>
+        <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;color:var(--purple-dark)" id="sum-rate">—</div>
+      </div>
+    </div>
+
+    <!-- FILTER TABS -->
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1.2rem;border-bottom:1px solid var(--border);gap:1rem;flex-wrap:wrap">
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+          <button class="tab-btn active" data-status="all"    onclick="setTab(this)">All Orders</button>
+          <button class="tab-btn" data-status="paid"          onclick="setTab(this)">Pending</button>
+          <button class="tab-btn" data-status="processing"    onclick="setTab(this)">Processing</button>
+          <button class="tab-btn" data-status="shipped"       onclick="setTab(this)">Shipped</button>
+          <button class="tab-btn" data-status="completed"     onclick="setTab(this)">Completed</button>
+          <button class="tab-btn" data-status="cancelled"     onclick="setTab(this)">Cancelled</button>
+        </div>
+        <div style="display:flex;gap:0.5rem;align-items:center">
+          <span style="font-size:0.72rem;color:var(--gray)" id="showing-count"></span>
+        </div>
+      </div>
+
+      <div id="orders-table-wrap">
+        <div class="loading-row"><div class="spinner"></div><span>Loading orders...</span></div>
+      </div>
+
+      <div class="pagination" id="pagination" style="display:none">
+        <span id="page-info">Showing 1 to 10 of 0 orders</span>
+        <div class="page-btns" id="page-btns"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
 <!-- ORDER DETAIL MODAL -->
-<div class="order-detail-modal" id="order-modal" style="display:none">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <h2 id="modal-title">Order Details</h2>
+<div class="modal-wrap" id="order-modal">
+  <div class="modal-box" style="max-width:640px">
+    <button class="modal-close" onclick="closeOrderModal()">✕</button>
+    <h2 id="modal-ref">Order Details</h2>
     <div id="modal-body"></div>
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="../js/config.js"></script>
 <script src="../js/db.js"></script>
+<script src="admin.js"></script>
 <script>
-  if (sessionStorage.getItem('hka_admin') !== 'true') { window.location.href = 'login.html'; }
-  function logout() { sessionStorage.clear(); window.location.href = 'login.html'; }
+  if (!adminGuard()) throw new Error('Unauthorized');
 
-  let allOrders = [];
+  let allOrders = [], currentTab = 'all', currentPage = 1;
+  const PER_PAGE = 10;
 
-  async function loadOrders() {
-    allOrders = await dbGetOrders();
-    filterOrders();
+  async function load() {
+    allOrders = await dbOrders({});
+    const paid   = allOrders.filter(o => ['paid','completed','shipped'].includes(o.status));
+    const rev    = paid.reduce((s,o) => s+(o.total_ngn||0), 0);
+    const aov    = paid.length ? Math.round(rev/paid.length) : 0;
+    const fulfilled = allOrders.filter(o => ['completed','shipped'].includes(o.status)).length;
+    const rate   = allOrders.length ? ((fulfilled/allOrders.length)*100).toFixed(1) : '0';
+    document.getElementById('sum-rev').textContent  = fmt(rev);
+    document.getElementById('sum-aov').textContent  = fmt(aov);
+    document.getElementById('sum-rate').textContent = rate + '%';
+    render();
   }
 
-  function filterOrders() {
-    const status = document.getElementById('status-filter').value;
-    const filtered = status === 'all' ? allOrders : allOrders.filter(o => o.status === status);
-    document.getElementById('order-count').textContent = filtered.length + ' orders';
-    renderOrders(filtered);
+  function getFiltered() {
+    const q = document.getElementById('search-input').value.toLowerCase();
+    return allOrders.filter(o => {
+      const matchTab = currentTab === 'all' || o.status === currentTab;
+      const matchQ   = !q || (o.reference||'').toLowerCase().includes(q) || (o.customer_name||'').toLowerCase().includes(q) || (o.customer_email||'').toLowerCase().includes(q);
+      return matchTab && matchQ;
+    });
   }
 
-  function renderOrders(orders) {
-    const wrap = document.getElementById('orders-wrap');
-    if (!orders.length) {
-      wrap.innerHTML = '<p style="padding:2rem;text-align:center;color:var(--gray);font-size:0.82rem">No orders found.</p>';
+  function render() {
+    const filtered = getFiltered();
+    const total    = filtered.length;
+    const start    = (currentPage-1)*PER_PAGE;
+    const page     = filtered.slice(start, start+PER_PAGE);
+    document.getElementById('showing-count').textContent = total + ' orders';
+
+    if (!page.length) {
+      document.getElementById('orders-table-wrap').innerHTML = '<div class="loading-row"><p>No orders found.</p></div>';
+      document.getElementById('pagination').style.display = 'none';
       return;
     }
 
-    wrap.innerHTML = `
-      <table class="admin-table">
-        <thead><tr>
-          <th>Reference</th><th>Customer</th><th>Phone</th>
-          <th>Items</th><th>Total</th><th>Status</th>
-          <th>Date</th><th>Actions</th>
-        </tr></thead>
-        <tbody>
-          ${orders.map((o, i) => {
-            const items = Array.isArray(o.items) ? o.items : [];
-            return `<tr>
-              <td><code style="font-size:0.7rem">${o.reference || '—'}</code></td>
-              <td>
-                <strong style="font-size:0.82rem">${o.customer_name || '—'}</strong><br>
-                <span style="font-size:0.7rem;color:var(--gray)">${o.customer_email || ''}</span>
-              </td>
-              <td style="font-size:0.78rem">${o.customer_phone || '—'}</td>
-              <td style="font-size:0.75rem;color:var(--gray);max-width:160px">
-                ${items.map(item => `${item.name} (${item.size}) ×${item.qty}`).join('<br>')}
-              </td>
-              <td><strong>₦${(o.total_ngn||0).toLocaleString()}</strong></td>
-              <td>
-                <select class="admin-select" style="width:auto;font-size:0.72rem;padding:0.3rem 0.5rem"
-                  onchange="updateStatus('${o.id}', this.value)">
-                  <option value="paid" ${o.status==='paid'?'selected':''}>Paid</option>
-                  <option value="processing" ${o.status==='processing'?'selected':''}>Processing</option>
-                  <option value="shipped" ${o.status==='shipped'?'selected':''}>Shipped</option>
-                  <option value="cancelled" ${o.status==='cancelled'?'selected':''}>Cancelled</option>
-                </select>
-              </td>
-              <td style="font-size:0.72rem;color:var(--gray)">${o.created_at ? new Date(o.created_at).toLocaleDateString('en-NG', {day:'numeric',month:'short',year:'numeric'}) : '—'}</td>
-              <td style="display:flex;gap:0.4rem;flex-wrap:wrap">
-                <button class="btn-admin-sm" onclick="viewOrder(${i})">Details</button>
-                <a href="https://wa.me/${o.customer_phone ? o.customer_phone.replace(/\D/g,'') : ''}" target="_blank" class="btn-admin-sm">WhatsApp</a>
-              </td>
-            </tr>`;
-          }).join('')}
-        </tbody>
-      </table>`;
+    document.getElementById('orders-table-wrap').innerHTML = `
+      <div style="overflow-x:auto">
+        <table class="data-table" style="min-width:900px">
+          <thead><tr>
+            <th>ORDER #</th><th>CUSTOMER</th><th>CONTACT INFORMATION</th>
+            <th>PRODUCT PURCHASED</th><th>TOTAL AMOUNT</th><th>STATUS</th><th>ACTION</th>
+          </tr></thead>
+          <tbody>
+            ${page.map((o,i) => {
+              const items = pj(o.items, []);
+              const firstItem = items[0] || {};
+              const bg  = avatarColor(o.customer_name||'');
+              const tc  = avatarTextColor(bg);
+              const initials_val = initials(o.customer_name||'?');
+              return `<tr>
+                <td style="font-weight:700;color:var(--purple);font-size:0.82rem">#${(o.reference||'').slice(-6)||i+1}</td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:0.6rem">
+                    <div class="cust-avatar" style="background:${bg};color:${tc}">${initials_val}</div>
+                    <div>
+                      <div style="font-weight:600;font-size:0.82rem">${o.customer_name||'—'}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div style="font-size:0.78rem;color:var(--gray);line-height:1.7">
+                    ${o.customer_email||''}<br>
+                    ${o.customer_phone||''}
+                  </div>
+                </td>
+                <td>
+                  <div style="font-size:0.8rem">
+                    <strong>${firstItem.name||'—'}</strong><br>
+                    <span style="font-size:0.72rem;color:var(--gray)">
+                      SIZE: ${firstItem.size||'—'} • QTY: ${firstItem.qty||1}
+                      ${items.length>1?` +${items.length-1} more`:''}
+                    </span>
+                  </div>
+                </td>
+                <td style="font-weight:700;color:var(--purple-dark)">${fmt(o.total_ngn)}</td>
+                <td>
+                  <select class="form-select" style="width:130px;font-size:0.72rem;padding:0.35rem 0.6rem;border-radius:6px" onchange="updateStatus('${o.id}',this.value)">
+                    <option value="paid"        ${o.status==='paid'?'selected':''}>Paid</option>
+                    <option value="processing"  ${o.status==='processing'?'selected':''}>Processing</option>
+                    <option value="shipped"     ${o.status==='shipped'?'selected':''}>Shipped</option>
+                    <option value="completed"   ${o.status==='completed'?'selected':''}>Completed</option>
+                    <option value="cancelled"   ${o.status==='cancelled'?'selected':''}>Cancelled</option>
+                  </select>
+                </td>
+                <td>
+                  <div style="display:flex;gap:0.4rem;align-items:center">
+                    <button class="btn btn-outline btn-sm" onclick="viewOrder('${o.id}')">View</button>
+                    <button class="btn-icon" title="WhatsApp" onclick="window.open('https://wa.me/${CONFIG.WHATSAPP}?text='+encodeURIComponent('Order update for ${o.customer_name}: '+o.reference))">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="#16a34a"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>`;
+
+    // Pagination
+    const totalPages = Math.ceil(total/PER_PAGE);
+    document.getElementById('pagination').style.display = total > PER_PAGE ? 'flex' : 'none';
+    document.getElementById('page-info').textContent = `Showing ${start+1} to ${Math.min(start+PER_PAGE,total)} of ${total} orders`;
+    const btns = document.getElementById('page-btns');
+    btns.innerHTML = [
+      `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage<=1?'disabled':''}>‹</button>`,
+      ...Array.from({length:Math.min(totalPages,5)},(_,i)=>i+1).map(p=>`<button class="page-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`),
+      `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage>=totalPages?'disabled':''}>›</button>`
+    ].join('');
   }
+
+  function setTab(btn) {
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTab = btn.dataset.status;
+    currentPage = 1;
+    render();
+  }
+
+  function filterOrders() { currentPage=1; render(); }
+  function goPage(p) { const max=Math.ceil(getFiltered().length/PER_PAGE); if(p<1||p>max)return; currentPage=p; render(); }
 
   async function updateStatus(id, status) {
     try {
       await dbUpdateOrderStatus(id, status);
-      const order = allOrders.find(o => o.id === id);
-      if (order) order.status = status;
-      // Show feedback
-      const toast = document.createElement('div');
-      toast.textContent = 'Status updated to ' + status;
-      toast.style.cssText = 'position:fixed;bottom:2rem;right:2rem;background:var(--black);color:white;padding:0.8rem 1.2rem;font-size:0.78rem;z-index:9999';
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
-    } catch(e) {
-      alert('Failed to update status: ' + e.message);
-    }
+      const o = allOrders.find(x=>x.id===id);
+      if (o) o.status = status;
+      toast('Status updated to ' + status, 'success');
+    } catch(e) { toast('Update failed: '+e.message, 'error'); }
   }
 
-  let currentOrders = [];
-  function viewOrder(i) {
-    const filtered = document.getElementById('status-filter').value === 'all' ? allOrders : allOrders.filter(o => o.status === document.getElementById('status-filter').value);
-    currentOrders = filtered;
-    const o = filtered[i];
+  function viewOrder(id) {
+    const o = allOrders.find(x=>x.id===id);
     if (!o) return;
-    const items = Array.isArray(o.items) ? o.items : [];
-
-    document.getElementById('modal-title').textContent = 'Order: ' + (o.reference || o.id);
+    const items = pj(o.items, []);
+    document.getElementById('modal-ref').textContent = 'Order #' + (o.reference||o.id).slice(-8);
     document.getElementById('modal-body').innerHTML = `
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
-        <div><p style="font-size:0.65rem;letter-spacing:2px;color:var(--gray);margin-bottom:0.3rem">CUSTOMER</p><strong>${o.customer_name}</strong><br><span style="font-size:0.78rem;color:var(--gray)">${o.customer_email}</span><br><span style="font-size:0.78rem">${o.customer_phone}</span></div>
-        <div><p style="font-size:0.65rem;letter-spacing:2px;color:var(--gray);margin-bottom:0.3rem">DELIVERY</p><span style="font-size:0.82rem">${o.customer_address || '—'}</span></div>
-        <div><p style="font-size:0.65rem;letter-spacing:2px;color:var(--gray);margin-bottom:0.3rem">TOTAL</p><strong style="font-size:1.2rem">₦${(o.total_ngn||0).toLocaleString()}</strong></div>
-        <div><p style="font-size:0.65rem;letter-spacing:2px;color:var(--gray);margin-bottom:0.3rem">STATUS</p><span class="status-badge status-${o.status}">${o.status}</span></div>
-        <div><p style="font-size:0.65rem;letter-spacing:2px;color:var(--gray);margin-bottom:0.3rem">DATE</p><span style="font-size:0.82rem">${o.created_at ? new Date(o.created_at).toLocaleString() : '—'}</span></div>
-        <div><p style="font-size:0.65rem;letter-spacing:2px;color:var(--gray);margin-bottom:0.3rem">TRANSACTION ID</p><code style="font-size:0.7rem">${o.transaction_id || '—'}</code></div>
+        <div style="background:var(--purple-pale);border-radius:8px;padding:1rem">
+          <div style="font-size:0.65rem;font-weight:700;letter-spacing:1px;color:var(--gray);margin-bottom:0.5rem">CUSTOMER</div>
+          <div style="font-weight:700;font-size:0.9rem">${o.customer_name||'—'}</div>
+          <div style="font-size:0.78rem;color:var(--gray);margin-top:0.2rem">${o.customer_email||''}</div>
+          <div style="font-size:0.78rem;color:var(--gray)">${o.customer_phone||''}</div>
+        </div>
+        <div style="background:var(--purple-pale);border-radius:8px;padding:1rem">
+          <div style="font-size:0.65rem;font-weight:700;letter-spacing:1px;color:var(--gray);margin-bottom:0.5rem">DELIVERY</div>
+          <div style="font-size:0.82rem;line-height:1.6">${o.customer_address||'—'}</div>
+        </div>
+        <div style="background:var(--purple-pale);border-radius:8px;padding:1rem">
+          <div style="font-size:0.65rem;font-weight:700;letter-spacing:1px;color:var(--gray);margin-bottom:0.3rem">TOTAL</div>
+          <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:900;color:var(--purple-dark)">${fmt(o.total_ngn)}</div>
+        </div>
+        <div style="background:var(--purple-pale);border-radius:8px;padding:1rem">
+          <div style="font-size:0.65rem;font-weight:700;letter-spacing:1px;color:var(--gray);margin-bottom:0.3rem">DATE</div>
+          <div style="font-size:0.82rem">${fmtDateTime(o.created_at)}</div>
+          <span class="badge badge-${o.status}" style="margin-top:0.5rem">${o.status}</span>
+        </div>
       </div>
-      <p style="font-size:0.65rem;letter-spacing:2px;color:var(--gray);margin-bottom:0.8rem">ITEMS ORDERED</p>
-      ${items.map(item => `
-        <div style="display:flex;align-items:center;gap:1rem;padding:0.8rem 0;border-bottom:1px solid var(--border)">
-          <span style="font-size:1.8rem">${item.emoji}</span>
-          <div>
-            <strong style="font-size:0.85rem">${item.name}</strong><br>
-            <span style="font-size:0.75rem;color:var(--gray)">Size: ${item.size} | Color: <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${item.color};vertical-align:middle;border:1px solid rgba(0,0,0,0.1)"></span> | Qty: ${item.qty}</span>
-            ${item.customText ? `<br><span style="font-size:0.75rem;color:var(--gray)">Custom text: "${item.customText}"</span>` : ''}
+      <div style="font-size:0.65rem;font-weight:700;letter-spacing:1px;color:var(--gray);margin-bottom:0.8rem;text-transform:uppercase">Items Ordered</div>
+      ${items.map(item=>`
+        <div style="display:flex;align-items:center;gap:1rem;padding:0.8rem;background:var(--bg);border-radius:8px;margin-bottom:0.5rem">
+          <div style="width:48px;height:48px;border-radius:8px;overflow:hidden;background:var(--purple-pale);flex-shrink:0">
+            ${item.image_url?`<img src="${item.image_url}" style="width:100%;height:100%;object-fit:cover"/>`:''}
           </div>
-          <strong style="margin-left:auto;font-size:0.85rem">₦${(item.subtotal_ngn||0).toLocaleString()}</strong>
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:0.85rem">${item.name||'—'}</div>
+            <div style="font-size:0.75rem;color:var(--gray)">Size: ${item.size||'—'} | Qty: ${item.qty||1} | Color: <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${item.color||'#ccc'};vertical-align:middle;border:1px solid rgba(0,0,0,0.1)"></span></div>
+            ${item.measurements?.chest?`<div style="font-size:0.72rem;color:var(--gray)">Chest: ${item.measurements.chest}"</div>`:''}
+            ${item.customText?`<div style="font-size:0.72rem;color:var(--purple)">Custom: "${item.customText}"</div>`:''}
+          </div>
+          <div style="font-weight:700;font-size:0.88rem">${fmt(item.subtotal_ngn||item.price_ngn*item.qty)}</div>
         </div>`).join('')}
-      <div style="margin-top:1.5rem;display:flex;gap:0.8rem">
-        <a href="https://wa.me/${(o.customer_phone||'').replace(/\D/g,'')}" target="_blank" class="btn-admin">WhatsApp Customer</a>
-        <a href="mailto:${o.customer_email}?subject=Your HOODIES Order ${o.reference}" class="btn-admin-sm">Email Customer</a>
+      <div style="display:flex;gap:0.75rem;margin-top:1.5rem">
+        <a href="https://wa.me/${CONFIG.WHATSAPP}" target="_blank" class="btn btn-green btn-sm" style="background:var(--green);color:white">WhatsApp Customer</a>
+        <a href="mailto:${o.customer_email}?subject=Your HOODIES Order ${o.reference}" class="btn btn-ghost btn-sm">Email Customer</a>
       </div>`;
-
-    document.getElementById('order-modal').style.display = 'flex';
+    document.getElementById('order-modal').classList.add('show');
   }
 
-  function closeModal() {
-    document.getElementById('order-modal').style.display = 'none';
+  function closeOrderModal() { document.getElementById('order-modal').classList.remove('show'); }
+  document.getElementById('order-modal').addEventListener('click', e => { if(e.target.id==='order-modal') closeOrderModal(); });
+
+  function exportOrders() {
+    if (!allOrders.length) { toast('No orders to export','error'); return; }
+    const rows = [['Reference','Customer','Email','Phone','Address','Items','Total NGN','Status','Date']];
+    allOrders.forEach(o => { rows.push([o.reference||'',o.customer_name||'',o.customer_email||'',o.customer_phone||'',o.customer_address||'',(pj(o.items,[])).length,o.total_ngn||0,o.status||'',o.created_at?.slice(0,10)||'']); });
+    const csv = rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+    const a = document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv); a.download='orders.csv'; a.click();
+    toast('Exported!','success');
   }
 
-  document.getElementById('order-modal').addEventListener('click', (e) => {
-    if (e.target.id === 'order-modal') closeModal();
-  });
-
-  loadOrders();
+  load();
 </script>
 </body>
 </html>
