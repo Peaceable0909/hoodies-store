@@ -3,358 +3,90 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>HOODIES — Kinetic Atelier</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    :root {
-      --black: #080808;
-      --white: #f8f7f3;
-      --cream: #f0ede5;
-      --gray: #5a5a5a;
-      --border: #e0ddd5;
-      --accent: #c8a96e;
-      --navy: #1a3a5c;
-      --font-display: 'Playfair Display', serif;
-      --font-ui: 'Syne', sans-serif;
-      --nav-h: 68px;
-    }
-    body { background: var(--white); color: var(--black); font-family: var(--font-ui); overflow-x: hidden; }
-    a { color: inherit; text-decoration: none; }
-
-    /* NAV */
-    .nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-      height: var(--nav-h); display: flex; align-items: center;
-      justify-content: space-between; padding: 0 3rem;
-      background: rgba(248,247,243,0.96); backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-logo { font-family: var(--font-display); font-size: 1.4rem; font-weight: 900; letter-spacing: 6px; text-transform: uppercase; }
-    .nav-logo span { color: var(--accent); }
-    .nav-links { display: flex; gap: 2.5rem; }
-    .nav-links a { font-size: 0.72rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); transition: color 0.2s; }
-    .nav-links a:hover, .nav-links a.active { color: var(--black); }
-    .nav-right { display: flex; align-items: center; gap: 1.5rem; }
-    .currency-sw { display: flex; border: 1px solid var(--border); }
-    .currency-sw button { background: none; border: none; padding: 0.35rem 0.65rem; font-family: var(--font-ui); font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; color: var(--gray); cursor: pointer; transition: all 0.2s; }
-    .currency-sw button.active, .currency-sw button:hover { background: var(--black); color: white; }
-    .cart-btn { display: flex; align-items: center; gap: 0.5rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; border: 1px solid var(--black); padding: 0.45rem 1rem; transition: all 0.2s; }
-    .cart-btn:hover { background: var(--black); color: white; }
-    .cart-badge { background: var(--accent); color: white; border-radius: 999px; padding: 1px 6px; font-size: 0.6rem; font-weight: 800; display: none; }
-
-    /* HERO */
-    .hero { min-height: 100vh; padding-top: var(--nav-h); display: grid; grid-template-columns: 55% 45%; }
-    .hero-left { padding: 5rem 4rem; display: flex; flex-direction: column; justify-content: center; }
-    .hero-eyebrow { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 2.5rem; }
-    .hero-eyebrow-line { width: 40px; height: 1px; background: var(--accent); }
-    .hero-eyebrow-text { font-size: 0.62rem; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); }
-    .hero-title { font-family: var(--font-display); font-size: clamp(4rem, 7vw, 7.5rem); font-weight: 900; line-height: 0.95; margin-bottom: 2rem; }
-    .hero-title .t1 { display: block; }
-    .hero-title .t2 { display: block; font-style: italic; color: var(--navy); }
-    .hero-title .t3 { display: block; }
-    .hero-sub { font-size: 0.9rem; color: var(--gray); line-height: 1.8; max-width: 380px; margin-bottom: 3rem; border-left: 3px solid var(--accent); padding-left: 1.2rem; }
-    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem; }
-    .btn-primary { display: inline-block; background: var(--black); color: white; font-size: 0.72rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 1rem 2.2rem; border: 2px solid var(--black); transition: all 0.3s; }
-    .btn-primary:hover { background: var(--accent); border-color: var(--accent); }
-    .btn-secondary { display: inline-block; background: transparent; color: var(--black); font-size: 0.72rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 1rem 2.2rem; border: 2px solid var(--border); transition: all 0.3s; }
-    .btn-secondary:hover { border-color: var(--black); }
-    .hero-stats { display: flex; gap: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--border); }
-    .stat-num { font-family: var(--font-display); font-size: 2rem; font-weight: 900; display: block; line-height: 1; }
-    .stat-label { font-size: 0.65rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); margin-top: 0.3rem; display: block; }
-
-    .hero-right { position: relative; overflow: hidden; background: var(--cream); }
-    .hero-img-main { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .hero-placeholder {
-      width: 100%; height: 100%; min-height: 600px;
-      background: linear-gradient(160deg, #d8d2c8 0%, #b8b0a4 100%);
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem;
-    }
-    .placeholder-shape {
-      width: 130px; height: 170px;
-      background: rgba(0,0,0,0.12);
-      clip-path: polygon(20% 0%,80% 0%,95% 10%,95% 90%,80% 100%,20% 100%,5% 90%,5% 10%);
-    }
-    .placeholder-text { font-size: 0.62rem; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; color: rgba(0,0,0,0.25); }
-    .hero-float {
-      position: absolute; bottom: 2.5rem; left: 2.5rem;
-      background: white; padding: 1.2rem 1.5rem;
-      border-left: 4px solid var(--accent);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-    }
-    .hero-float-tag { font-size: 0.6rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 0.3rem; }
-    .hero-float-name { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; display: block; margin-bottom: 0.2rem; }
-    .hero-float-price { font-size: 0.8rem; font-weight: 600; color: var(--gray); display: block; }
-
-    /* MARQUEE */
-    .marquee-strip { background: var(--black); padding: 1.1rem 0; overflow: hidden; border-top: 3px solid var(--accent); }
-    .marquee-track { display: flex; gap: 3rem; white-space: nowrap; animation: marquee 22s linear infinite; }
-    .marquee-item { font-family: var(--font-display); font-size: 0.95rem; font-style: italic; letter-spacing: 3px; color: rgba(255,255,255,0.7); flex-shrink: 0; }
-    .marquee-dot { color: var(--accent) !important; opacity: 1; }
-    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-    /* SECTION */
-    .section-eyebrow { font-size: 0.62rem; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
-    .section-title { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; line-height: 1; }
-    .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; }
-    .section-link { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); transition: color 0.2s; }
-    .section-link:hover { color: var(--black); }
-
-    /* VAULT */
-    .vault { padding: 6rem 3rem; }
-    .vault-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; }
-    .vault-card { cursor: pointer; background: var(--cream); transition: transform 0.4s; }
-    .vault-card:hover { transform: translateY(-6px); }
-    .vault-card-img { aspect-ratio: 3/4; overflow: hidden; position: relative; }
-    .vault-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; }
-    .vault-card:hover .vault-card-img img { transform: scale(1.05); }
-    .vault-img-placeholder { width: 100%; height: 100%; background: linear-gradient(160deg,#e0dbd2,#c8c2b8); display: flex; align-items: center; justify-content: center; }
-    .vault-img-placeholder span { font-size: 0.62rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: rgba(0,0,0,0.25); }
-    .vault-card-info { padding: 1rem 1.2rem; background: white; border-top: 1px solid var(--border); }
-    .vault-card-cat { font-size: 0.6rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 0.3rem; }
-    .vault-card-name { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
-    .vault-card-price { font-size: 0.85rem; font-weight: 600; }
-
-    /* TRENDING */
-    .trending { padding: 6rem 3rem; background: var(--black); color: white; }
-    .trending .section-title { color: white; }
-    .trending .section-link { color: rgba(255,255,255,0.35); }
-    .trending .section-link:hover { color: white; }
-    .trending-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; margin-top: 3rem; }
-    .trending-card { cursor: pointer; position: relative; overflow: hidden; }
-    .trending-card-img { aspect-ratio: 2/3; overflow: hidden; position: relative; }
-    .trending-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; filter: brightness(0.82); }
-    .trending-card:hover .trending-card-img img { transform: scale(1.04); filter: brightness(0.95); }
-    .trending-img-placeholder { width: 100%; height: 100%; background: linear-gradient(160deg,#1e1e1e,#2d2d2d); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.7rem; }
-    .ph-bar { width: 60px; height: 2px; background: rgba(255,255,255,0.1); }
-    .ph-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.2); }
-    .trending-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent,rgba(0,0,0,0.85)); padding: 2rem 1.5rem 1.5rem; }
-    .trending-name { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: white; margin-bottom: 0.3rem; }
-    .trending-price { font-size: 0.85rem; font-weight: 600; color: var(--accent); }
-    .trending-badge { position: absolute; top: 1rem; left: 1rem; background: var(--accent); color: white; font-size: 0.58rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; padding: 0.3rem 0.7rem; }
-
-    /* PALETTE */
-    .palette { display: grid; grid-template-columns: 1fr 1fr; min-height: 60vh; }
-    .palette-left { background: var(--navy); color: white; padding: 5rem 4rem; display: flex; flex-direction: column; justify-content: center; }
-    .palette-left .section-eyebrow { color: var(--accent); margin-bottom: 0.5rem; }
-    .palette-left .section-title { color: white; margin-bottom: 1.5rem; }
-    .palette-left p { color: rgba(255,255,255,0.55); font-size: 0.88rem; line-height: 1.8; margin-bottom: 2.5rem; max-width: 380px; }
-    .color-row { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 2rem; align-items: center; }
-    .color-dot-lg { width: 36px; height: 36px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.2); cursor: pointer; transition: all 0.2s; }
-    .color-dot-lg:hover { border-color: white; transform: scale(1.15); }
-    .color-more { font-size: 0.72rem; color: rgba(255,255,255,0.35); }
-    .palette-right { display: grid; grid-template-columns: 1fr 1fr; }
-    .pswatch { display: flex; align-items: flex-end; padding: 1.5rem; min-height: 200px; }
-    .pswatch-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.45); }
-
-    /* FOOTER */
-    .footer { background: var(--black); color: white; padding: 5rem 3rem 2rem; }
-    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 2fr; gap: 3rem; margin-bottom: 4rem; }
-    .footer-logo { font-family: var(--font-display); font-size: 1.6rem; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 1rem; display: block; }
-    .footer-logo span { color: var(--accent); }
-    .footer-brand p { font-size: 0.82rem; color: rgba(255,255,255,0.35); line-height: 1.8; max-width: 220px; }
-    .footer-col h4 { font-size: 0.62rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 1.5rem; }
-    .footer-col a { display: block; font-size: 0.82rem; color: rgba(255,255,255,0.55); margin-bottom: 0.8rem; transition: color 0.2s; }
-    .footer-col a:hover { color: white; }
-    .footer-nl h4 { font-size: 0.62rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 0.5rem; }
-    .footer-nl p { font-size: 0.8rem; color: rgba(255,255,255,0.35); margin-bottom: 1rem; }
-    .nl-row { display: flex; border: 1px solid rgba(255,255,255,0.12); }
-    .nl-input { flex: 1; background: none; border: none; padding: 0.8rem 1rem; font-family: var(--font-ui); font-size: 0.78rem; color: white; outline: none; }
-    .nl-input::placeholder { color: rgba(255,255,255,0.25); }
-    .nl-btn { background: var(--accent); border: none; padding: 0.8rem 1.2rem; color: white; font-weight: 700; font-size: 0.78rem; cursor: pointer; transition: background 0.2s; }
-    .nl-btn:hover { background: #b8985e; }
-    .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.07); font-size: 0.7rem; color: rgba(255,255,255,0.25); }
-    .footer-socials { display: flex; gap: 1.5rem; }
-    .footer-socials a { color: rgba(255,255,255,0.35); font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; transition: color 0.2s; }
-    .footer-socials a:hover { color: white; }
-
-    /* SKELETON */
-    .skel { background: linear-gradient(90deg,var(--cream) 25%,var(--border) 50%,var(--cream) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
-    .skel-img { aspect-ratio: 3/4; }
-    .skel-info { height: 80px; }
-    @keyframes shimmer { 0% { background-position:-200% 0; } 100% { background-position:200% 0; } }
-
-    @media (max-width: 960px) {
-      .hero { grid-template-columns: 1fr; }
-      .hero-right { min-height: 55vw; }
-      .vault-grid { grid-template-columns: repeat(2,1fr); }
-      .trending-grid { grid-template-columns: 1fr 1fr; }
-      .palette { grid-template-columns: 1fr; }
-      .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
-      .nav { padding: 0 1.5rem; }
-      .nav-links { gap: 1.5rem; }
-    }
-    @media (max-width: 600px) {
-      .hero-left { padding: 3rem 1.5rem; }
-      .vault, .trending { padding: 4rem 1.5rem; }
-      .vault-grid, .trending-grid { grid-template-columns: 1fr; }
-      .footer { padding: 4rem 1.5rem 2rem; }
-      .footer-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+  <title>HOODIES — The Curated Collection</title>
+  <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
 
 <nav class="nav">
-  <a href="index.html" class="nav-logo">HOODIES<span>.</span></a>
+  <a href="index.html" class="nav-logo">Hoodies</a>
   <div class="nav-links">
-    <a href="index.html" class="active">Home</a>
-    <a href="products.html">Shop</a>
-    <a href="product.html">Customize</a>
-    <a href="#">About</a>
+    <a href="catalog.html" class="active">Catalog</a>
+    <a href="design.html">Design Your Own</a>
+    <a href="closet.html">My Closet</a>
   </div>
   <div class="nav-right">
     <div class="currency-sw">
-      <button class="active" data-currency="NGN" onclick="setCurrency('NGN')">NGN</button>
-      <button data-currency="USD" onclick="setCurrency('USD')">USD</button>
+      <button class="cur-btn active" data-c="NGN" onclick="setCurrencyPref('NGN')">NGN</button>
+      <button class="cur-btn" data-c="USD" onclick="setCurrencyPref('USD')">USD</button>
     </div>
-    <a href="cart.html" class="cart-btn">Bag <span class="cart-badge" id="cart-count">0</span></a>
+    <a href="cart.html" class="nav-icon-btn" title="Cart">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <span class="cart-badge">0</span>
+    </a>
+    <a href="login.html" class="nav-icon-btn" id="user-nav-btn" title="Account">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </a>
   </div>
 </nav>
 
 <!-- HERO -->
-<section class="hero">
-  <div class="hero-left">
-    <div class="hero-eyebrow">
-      <div class="hero-eyebrow-line"></div>
-      <span class="hero-eyebrow-text">Edition 01 — 2024</span>
-    </div>
-    <h1 class="hero-title">
-      <span class="t1">Your</span>
-      <span class="t2">Style,</span>
-      <span class="t3">Your Rules.</span>
-    </h1>
-    <p class="hero-sub">Customize the ultimate hoodie. Precise craftsmanship meets urban energy. Designed in our kinetic atelier for those who lead.</p>
-    <div class="hero-btns">
-      <a href="product.html" class="btn-primary">Start Customizing</a>
-      <a href="products.html" class="btn-secondary">Explore Collection</a>
-    </div>
-    <div class="hero-stats">
-      <div><span class="stat-num">450</span><span class="stat-label">GSM Weight</span></div>
-      <div><span class="stat-num">12+</span><span class="stat-label">Color Options</span></div>
-      <div><span class="stat-num">3–5</span><span class="stat-label">Day Delivery</span></div>
-    </div>
-  </div>
-  <div class="hero-right">
-    <div id="hero-img-wrap" class="hero-placeholder">
-      <div class="placeholder-shape"></div>
-      <span class="placeholder-text">Signature Hoodie</span>
-    </div>
-    <div class="hero-float">
-      <span class="hero-float-tag">Limited Release</span>
-      <span class="hero-float-name">Signature Custom Hoodie</span>
-      <span class="hero-float-price" id="hero-price">From ₦15,000</span>
-    </div>
+<section style="background:var(--purple-pale);padding:calc(var(--nav-h) + 3rem) 2.5rem 3rem">
+  <div style="max-width:1200px;margin:0 auto">
+    <h1 style="font-family:var(--font-display);font-size:clamp(2.5rem,5vw,4rem);font-weight:900;color:var(--purple-dark);margin-bottom:1rem;max-width:600px">The Curated<br>Collection</h1>
+    <p style="font-size:1rem;color:var(--gray);max-width:420px;line-height:1.75">Discover our exclusive range of meticulously crafted garments. Elevate your wardrobe with pieces designed for both aesthetic perfection and enduring quality.</p>
   </div>
 </section>
 
-<!-- MARQUEE -->
-<div class="marquee-strip">
-  <div class="marquee-track">
-    <span class="marquee-item">Custom Hoodies</span><span class="marquee-item marquee-dot">✦</span>
-    <span class="marquee-item">Embroidered Caps</span><span class="marquee-item marquee-dot">✦</span>
-    <span class="marquee-item">Premium Polos</span><span class="marquee-item marquee-dot">✦</span>
-    <span class="marquee-item">Full Tracksuits</span><span class="marquee-item marquee-dot">✦</span>
-    <span class="marquee-item">Same Week Delivery</span><span class="marquee-item marquee-dot">✦</span>
-    <span class="marquee-item">Custom Hoodies</span><span class="marquee-item marquee-dot">✦</span>
-    <span class="marquee-item">Embroidered Caps</span><span class="marquee-item marquee-dot">✦</span>
-    <span class="marquee-item">Premium Polos</span><span class="marquee-item marquee-dot">✦</span>
-    <span class="marquee-item">Full Tracksuits</span><span class="marquee-item marquee-dot">✦</span>
-    <span class="marquee-item">Same Week Delivery</span><span class="marquee-item marquee-dot">✦</span>
-  </div>
-</div>
-
-<!-- VAULT -->
-<section class="vault">
-  <div class="section-header">
-    <div>
-      <p class="section-eyebrow">The Atelier Vault</p>
-      <h2 class="section-title">Shop by Category</h2>
-    </div>
-    <a href="products.html" class="section-link">View All</a>
-  </div>
-  <div class="vault-grid" id="vault-grid">
-    <div class="skel skel-img"></div><div class="skel skel-img"></div>
-    <div class="skel skel-img"></div><div class="skel skel-img"></div>
-  </div>
-</section>
-
-<!-- TRENDING -->
-<section class="trending">
-  <div class="section-header">
-    <div>
-      <p class="section-eyebrow">Currently Pulsing</p>
-      <h2 class="section-title">Trending Now</h2>
-    </div>
-    <a href="products.html" class="section-link">Shop All</a>
-  </div>
-  <div class="trending-grid" id="trending-grid">
-    <div class="trending-card"><div class="trending-card-img"><div class="trending-img-placeholder"><div class="ph-bar"></div><span class="ph-label">Loading</span></div></div></div>
-    <div class="trending-card"><div class="trending-card-img"><div class="trending-img-placeholder"><div class="ph-bar"></div><span class="ph-label">Loading</span></div></div></div>
-    <div class="trending-card"><div class="trending-card-img"><div class="trending-img-placeholder"><div class="ph-bar"></div><span class="ph-label">Loading</span></div></div></div>
-  </div>
-</section>
-
-<!-- PALETTE -->
-<div class="palette">
-  <div class="palette-left">
-    <p class="section-eyebrow">Kinetic Customizer</p>
-    <h2 class="section-title">Master Your<br><em>Own Palette.</em></h2>
-    <p>Our kinetic customizer lets you tweak every detail — stitch color, fabric weight, custom text. Make it uniquely yours.</p>
-    <div class="color-row">
-      <div class="color-dot-lg" style="background:#080808"></div>
-      <div class="color-dot-lg" style="background:#c0392b"></div>
-      <div class="color-dot-lg" style="background:#2563eb"></div>
-      <div class="color-dot-lg" style="background:#27ae60"></div>
-      <div class="color-dot-lg" style="background:#c8a96e"></div>
-      <span class="color-more">+12 Colors</span>
-    </div>
-    <a href="product.html" class="btn-primary" style="width:fit-content">Launch Customizer</a>
-  </div>
-  <div class="palette-right">
-    <div class="pswatch" style="background:#080808"><span class="pswatch-label">Onyx</span></div>
-    <div class="pswatch" style="background:#1a3a5c"><span class="pswatch-label">Navy</span></div>
-    <div class="pswatch" style="background:#c0392b"><span class="pswatch-label">Crimson</span></div>
-    <div class="pswatch" style="background:#d4c8a8"><span class="pswatch-label" style="color:rgba(0,0,0,0.35)">Sand</span></div>
+<!-- CATALOG CARDS -->
+<div class="catalog-section" style="max-width:1200px;margin:0 auto">
+  <div class="catalog-grid-2x2" id="catalog-grid">
+    <!-- Injected by JS -->
+    <div class="skeleton" style="aspect-ratio:16/10;border-radius:12px"></div>
+    <div class="skeleton" style="aspect-ratio:16/10;border-radius:12px"></div>
+    <div class="skeleton" style="aspect-ratio:16/10;border-radius:12px"></div>
+    <div class="skeleton" style="aspect-ratio:16/10;border-radius:12px"></div>
   </div>
 </div>
 
 <!-- FOOTER -->
 <footer class="footer">
-  <div class="footer-grid">
-    <div class="footer-brand">
-      <span class="footer-logo">HOODIES<span>.</span></span>
-      <p>Elevating street essentialism through kinetic design and bespoke craftsmanship. Made in Nigeria.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Explore</h4>
-      <a href="products.html">New Arrivals</a>
-      <a href="products.html">Best Sellers</a>
-      <a href="product.html">Custom Studio</a>
-    </div>
-    <div class="footer-col">
-      <h4>Support</h4>
-      <a href="#">Privacy Policy</a>
-      <a href="#">Shipping & Returns</a>
-      <a href="https://wa.me/2348024100995" target="_blank">WhatsApp Us</a>
-    </div>
-    <div class="footer-nl">
-      <h4>Stay in the Loop</h4>
-      <p>Join the circle for early access and exclusive drops.</p>
-      <div class="nl-row">
-        <input type="email" class="nl-input" placeholder="Your email address"/>
-        <button class="nl-btn">JOIN</button>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="footer-logo">Hoodies</span>
+        <p>Crafted for your unique fit. Premium custom clothing for those who lead.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Shop</h4>
+        <a href="catalog.html">Catalog</a>
+        <a href="design.html">Design Your Own</a>
+        <a href="closet.html">My Closet</a>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Shipping Info</a>
+        <a href="https://wa.me/2348024100995" target="_blank">Contact Us</a>
+      </div>
+      <div class="footer-nl">
+        <h4>Newsletter</h4>
+        <p>Join the circle for early access and drops.</p>
+        <div class="nl-row">
+          <input type="email" class="nl-input" placeholder="Email Address"/>
+          <button class="nl-btn">JOIN</button>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="footer-bottom">
-    <span>© 2024 HOODIES KINETIC ATELIER. ALL RIGHTS RESERVED.</span>
-    <div class="footer-socials">
-      <a href="https://wa.me/2348024100995" target="_blank">WhatsApp</a>
-      <a href="#">Instagram</a>
-      <a href="#">TikTok</a>
+    <div class="footer-bottom">
+      <span>© 2024 HOODIES. Crafted for your unique fit.</span>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Shipping Info</a>
+        <a href="https://wa.me/2348024100995" target="_blank">Contact Us</a>
+      </div>
     </div>
   </div>
 </footer>
@@ -362,70 +94,50 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/config.js"></script>
 <script src="js/db.js"></script>
-<script src="js/app.js"></script>
 <script>
-  const USD_RATE = 1600;
-  function fmt(ngn, cur) {
-    cur = cur || localStorage.getItem('hka_currency') || 'NGN';
-    return cur === 'USD' ? '$' + (ngn/USD_RATE).toFixed(2) : '₦' + ngn.toLocaleString();
-  }
-  function setCurrency(c) {
-    localStorage.setItem('hka_currency', c);
-    document.querySelectorAll('.currency-sw button').forEach(b => b.classList.toggle('active', b.dataset.currency === c));
-    document.querySelectorAll('[data-ngn]').forEach(el => el.textContent = fmt(parseFloat(el.dataset.ngn), c));
-  }
-  function updateBadge() {
-    const n = (JSON.parse(localStorage.getItem('hka_cart')||'[]')).reduce((s,i)=>s+i.qty,0);
-    const b = document.getElementById('cart-count');
-    if (b) { b.textContent = n; b.style.display = n > 0 ? 'inline' : 'none'; }
-  }
-  async function loadPage() {
-    const cur = localStorage.getItem('hka_currency') || 'NGN';
-    let products = [];
-    try { products = await dbGetProducts(); } catch(e) { console.error(e); }
+  const CATEGORIES = [
+    { key:"polos",      name:"Custom Polos",        desc:"Refined silhouettes with personalized detailing. The modern classic, redefined for your exact specifications." },
+    { key:"hoodies",    name:"Bespoke Hoodies",      desc:"Uncompromising comfort meets structural elegance. Heavyweight luxury." },
+    { key:"caps",       name:"House Sport Caps",     desc:"Signature headwear. Structured fit with our embroidered emblem." },
+    { key:"gymwear",    name:"Performance Gym Wear", desc:"Engineered for movement. Technical fabrics cut for an athletic, tailored fit." },
+    { key:"tracksuits", name:"Tracksuits",           desc:"Full set coordination. Precision cut for teams and individuals." },
+  ];
 
-    // Hero image
-    if (products.length && products[0].image_url) {
-      document.getElementById('hero-img-wrap').innerHTML = `<img src="${products[0].image_url}" alt="${products[0].name}" class="hero-img-main"/>`;
-    }
-    if (products.length) {
-      document.getElementById('hero-price').textContent = 'From ' + fmt(products[0].price_ngn, cur);
+  async function init() {
+    // Check auth
+    const user = await getUser();
+    if (user) {
+      const btn = document.getElementById('user-nav-btn');
+      btn.href = "closet.html";
+      btn.title = "My Closet";
     }
 
-    // Vault
-    const vGrid = document.getElementById('vault-grid');
-    const vItems = products.slice(0, 4);
-    vGrid.innerHTML = vItems.length ? vItems.map(p => `
-      <div class="vault-card" onclick="location='product.html?id=${p.id}'">
-        <div class="vault-card-img">
-          ${p.image_url ? `<img src="${p.image_url}" alt="${p.name}"/>` : `<div class="vault-img-placeholder"><span>${p.category}</span></div>`}
-        </div>
-        <div class="vault-card-info">
-          <div class="vault-card-cat">${p.category}</div>
-          <div class="vault-card-name">${p.name}</div>
-          <div class="vault-card-price" data-ngn="${p.price_ngn}">${fmt(p.price_ngn, cur)}</div>
-        </div>
-      </div>`).join('') : '<p style="color:var(--gray);font-size:0.82rem;padding:2rem;grid-column:1/-1">No products yet — add them from your admin panel.</p>';
+    // Load one product per category to get its image
+    const grid = document.getElementById('catalog-grid');
+    const all = await dbProducts();
 
-    // Trending
-    const tGrid = document.getElementById('trending-grid');
-    const tItems = products.slice(0, 3);
-    tGrid.innerHTML = tItems.length ? tItems.map((p,i) => `
-      <div class="trending-card" onclick="location='product.html?id=${p.id}'">
-        <div class="trending-card-img">
-          ${p.image_url ? `<img src="${p.image_url}" alt="${p.name}"/>` : `<div class="trending-img-placeholder"><div class="ph-bar"></div><span class="ph-label">${p.category}</span></div>`}
-          ${i===0 ? '<span class="trending-badge">New</span>' : ''}
-          <div class="trending-overlay">
-            <div class="trending-name">${p.name}</div>
-            <div class="trending-price" data-ngn="${p.price_ngn}">${fmt(p.price_ngn, cur)}</div>
+    const cards = CATEGORIES.slice(0, 4).map(cat => {
+      const sample = all.find(p => p.category === cat.key);
+      const img = sample?.image_url;
+      return `
+        <a href="catalog.html?cat=${cat.key}" class="catalog-card">
+          <div class="catalog-card-img">
+            ${img
+              ? `<img src="${img}" alt="${cat.name}"/>`
+              : `<div class="catalog-card-img-placeholder"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="1.5" opacity="0.3"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`}
           </div>
-        </div>
-      </div>`).join('') : '';
+          <div class="catalog-card-overlay">
+            <div class="catalog-card-name">${cat.name}</div>
+            <div class="catalog-card-desc">${cat.desc}</div>
+            <span class="btn btn-yellow btn-sm">View Collection</span>
+          </div>
+        </a>`;
+    });
+
+    grid.innerHTML = cards.join('');
   }
 
-  setCurrency(localStorage.getItem('hka_currency') || 'NGN');
-  updateBadge();
-  loadPage();
+  init();
 </script>
 </body>
 </html>
