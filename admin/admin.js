@@ -64,11 +64,11 @@ function closePanel() {
   document.getElementById('panel-overlay').classList.remove('show');
 }
 
-// Upload image to Supabase Storage
+// Upload image to Supabase Storage — uses service key to bypass RLS
 async function adminUploadImage(file, bucket, folder) {
   const ext  = file.name.split('.').pop();
   const name = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const sb   = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+  const sb   = getAdminSB();
   const { error } = await sb.storage.from(bucket).upload(name, file, { cacheControl: '3600', upsert: false, contentType: file.type });
   if (error) throw error;
   const { data } = sb.storage.from(bucket).getPublicUrl(name);
