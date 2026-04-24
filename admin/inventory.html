@@ -221,7 +221,7 @@
   let existingMannequinUrl = null, existingOriginalUrl = null;
 
   async function load() {
-    const sb = getAdminSB();
+    const sb = getSB();
     const { data } = await sb.from('products').select('*').order('created_at', { ascending: false });
     allProducts = data || [];
 
