@@ -109,7 +109,7 @@
   }
 
   async function updateReqStatus(id, status) {
-    const sb=getAdminSB();
+    const sb=getSB();
     await sb.from('design_requests').update({status}).eq('id',id);
     const r=allReqs.find(x=>x.id===id); if(r) r.status=status;
     toast('Status updated','success');
