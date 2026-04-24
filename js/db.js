@@ -18,7 +18,7 @@ async function dbProduct(id) {
 }
 
 async function dbSaveProduct(p) {
-  const sb = getAdminSB();
+  const sb = getSB();
   if (p.id) {
     const { data, error } = await sb.from("products").update(p).eq("id", p.id).select().single();
     if (error) throw error; return data;
@@ -29,7 +29,7 @@ async function dbSaveProduct(p) {
 }
 
 async function dbDeleteProduct(id) {
-  const { error } = await getAdminSB().from("products").update({ active: false }).eq("id", id);
+  const { error } = await getSB().from("products").update({ active: false }).eq("id", id);
   if (error) throw error;
 }
 
@@ -49,7 +49,7 @@ async function dbOrders(filters) {
 }
 
 async function dbUpdateOrderStatus(id, status) {
-  const { error } = await getAdminSB().from("orders").update({ status, updated_at: new Date().toISOString() }).eq("id", id);
+  const { error } = await getSB().from("orders").update({ status, updated_at: new Date().toISOString() }).eq("id", id);
   if (error) throw error;
 }
 
@@ -144,7 +144,7 @@ async function dbSeed() {
     { name:"Kinetic Snapback Cap", category:"caps", price_ngn:6000, description:"Flat brim. 6-panel. Front embroidery up to 10,000 stitches.", colors:JSON.stringify(["#1a1a1a","#ffffff","#c0392b","#2563eb"]), sizes:JSON.stringify(["One Size"]), active:true, featured:false, image_url:null, mannequin_url:null },
     { name:"Performance Gym Set", category:"gymwear", price_ngn:18000, description:"Moisture-wicking. 4-way stretch. Engineered for movement.", colors:JSON.stringify(["#1a1a1a","#5b21b6","#27ae60","#c0392b"]), sizes:JSON.stringify(["XS","S","M","L","XL"]), active:true, featured:false, image_url:null, mannequin_url:null },
   ];
-  const { error } = await getAdminSB().from("products").insert(defaults);
+  const { error } = await getSB().from("products").insert(defaults);
   if (error) throw error;
   return true;
 }
