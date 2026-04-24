@@ -214,7 +214,7 @@
 <script src="../js/db.js"></script>
 <script src="admin.js"></script>
 <script>
-  if (!adminGuard()) throw new Error('Unauthorized');
+  if (!await adminGuard()) throw new Error('Unauthorized');
 
   let allProducts = [], currentTab = 'all';
   let mannequinFile = null, originalFile = null;
