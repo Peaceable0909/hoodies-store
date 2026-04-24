@@ -40,9 +40,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="../js/config.js"></script>
 <script>
-  // ADMIN PASSWORD — change this when going live
-  const ADMIN_PASSWORD = 'Peaceable@Son';
-
   async function login() {
     const email = document.getElementById('email').value.trim();
     const pass  = document.getElementById('password').value;
@@ -53,28 +50,22 @@
     errEl.style.display = 'none';
     btn.textContent = 'Signing in...'; btn.disabled = true;
 
-    // Verify admin password then sign in via Supabase
-    if (pass !== ADMIN_PASSWORD) {
-      await new Promise(r => setTimeout(r, 800)); // delay brute force
-      errEl.textContent = 'Incorrect admin password.';
+    try {
+      const { error } = await getSB().auth.signInWithPassword({ email, password: pass });
+      if (error) throw error;
+      window.location.href = 'dashboard.html';
+    } catch(e) {
+      errEl.textContent = 'Incorrect email or password.';
       errEl.style.display = 'block';
       btn.textContent = 'Sign In to Admin'; btn.disabled = false;
-      return;
     }
-
-    // Store admin session
-    sessionStorage.setItem('hka_admin', 'true');
-    sessionStorage.setItem('hka_admin_email', email);
-    sessionStorage.setItem('hka_admin_time', Date.now());
-    window.location.href = 'dashboard.html';
   }
 
   // Auto-redirect if already logged in
-  if (sessionStorage.getItem('hka_admin') === 'true') {
-    const t = parseInt(sessionStorage.getItem('hka_admin_time') || '0');
-    if (Date.now() - t < 8 * 60 * 60 * 1000) window.location.href = 'dashboard.html';
-    else sessionStorage.clear();
-  }
+  (async () => {
+    const { data: { session } } = await getSB().auth.getSession();
+    if (session) window.location.href = 'dashboard.html';
+  })();
 </script>
 </body>
 </html>
