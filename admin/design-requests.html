@@ -63,7 +63,8 @@
 <script src="../js/db.js"></script>
 <script src="admin.js"></script>
 <script>
-  if (!await adminGuard()) throw new Error('Unauthorized');
+  (async () => {
+  if (!await adminGuard()) return;
   let allReqs=[];
 
   async function load() {
@@ -133,7 +134,8 @@
   }
 
   document.getElementById('req-modal').addEventListener('click',e=>{if(e.target.id==='req-modal')e.target.classList.remove('show');});
-  load();
+  await load();
+  })();
 </script>
 </body>
 </html>
