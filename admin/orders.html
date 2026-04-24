@@ -112,7 +112,8 @@
 <script src="../js/db.js"></script>
 <script src="admin.js"></script>
 <script>
-  if (!await adminGuard()) throw new Error('Unauthorized');
+  (async () => {
+  if (!await adminGuard()) return;
 
   let allOrders = [], currentTab = 'all', currentPage = 1;
   const PER_PAGE = 10;
@@ -307,7 +308,8 @@
     toast('Exported!','success');
   }
 
-  load();
+  await load();
+  })();
 </script>
 </body>
 </html>
