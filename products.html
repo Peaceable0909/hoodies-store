@@ -601,12 +601,12 @@
   }
 
   // ── SEED ──
-  async function seedProducts() {
+  async function Seed() {
     if (!confirm('Add the default HOODIES product catalog to your store?')) return;
     const btn = document.getElementById('seed-btn');
     btn.textContent = 'Seeding...'; btn.disabled = true;
     try {
-      await dbSeedProducts();
+      await dbSeed();
       await loadProducts();
       showToast('Default products added!');
     } catch(e) { showToast('Seed failed: ' + e.message, true); }
