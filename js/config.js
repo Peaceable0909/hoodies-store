@@ -29,10 +29,18 @@ function fmtPrice(ngn, cur) {
 }
 
 // ── SUPABASE CLIENT ──────────────────────────────────────────
-// One client using the anon key — RLS handles security via auth session
+// One client — session persisted in localStorage so it survives page navigation
 let _sb = null;
 function getSB() {
-  if (!_sb) _sb = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+  if (!_sb) _sb = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY, {
+    auth: {
+      persistSession:     true,
+      storageKey:         'hka_sb_session',
+      storage:            window.localStorage,
+      autoRefreshToken:   true,
+      detectSessionInUrl: false,
+    }
+  });
   return _sb;
 }
 
