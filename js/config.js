@@ -9,7 +9,7 @@ const CONFIG = {
 
   // Admin service key — bypasses RLS for admin operations ONLY
   // Never use this on public-facing pages
-  SUPABASE_SERVICE_KEY: "sb_secret_YXjjo4We_EYYC6vozD0JiA_exNCFvrt",
+  SUPABASE_SERVICE_KEY: "HEREEEEEEEEEEEEEEEEER",
 
   // Switch to live key when ready: FLWPUBK-59b3f035001471921a4601a258625a3f-X
   FLW_PUBLIC_KEY:    "FLWPUBK_TEST-afcc1c6ccfcbf26f90c285df1f524ce9-X",
