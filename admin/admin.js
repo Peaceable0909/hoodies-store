@@ -2,17 +2,15 @@
 //  ADMIN SHARED UTILITIES
 // ============================================================
 
-// Auth guard — call on every admin page
-function adminGuard() {
-  const ok   = sessionStorage.getItem('hka_admin') === 'true';
-  const time = parseInt(sessionStorage.getItem('hka_admin_time') || '0');
-  const aged = Date.now() - time > 8 * 60 * 60 * 1000;
-  if (!ok || aged) { sessionStorage.clear(); window.location.href = 'login.html'; return false; }
+// Auth guard — call on every admin page load
+async function adminGuard() {
+  const { data: { session } } = await getSB().auth.getSession();
+  if (!session) { window.location.href = 'login.html'; return false; }
   return true;
 }
 
-function adminLogout() {
-  sessionStorage.clear();
+async function adminLogout() {
+  await getSB().auth.signOut();
   window.location.href = 'login.html';
 }
 
@@ -64,11 +62,11 @@ function closePanel() {
   document.getElementById('panel-overlay').classList.remove('show');
 }
 
-// Upload image to Supabase Storage — uses service key to bypass RLS
+// Upload image to Supabase Storage — uses authenticated session
 async function adminUploadImage(file, bucket, folder) {
   const ext  = file.name.split('.').pop();
   const name = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const sb   = getAdminSB();
+  const sb   = getSB();
   const { error } = await sb.storage.from(bucket).upload(name, file, { cacheControl: '3600', upsert: false, contentType: file.type });
   if (error) throw error;
   const { data } = sb.storage.from(bucket).getPublicUrl(name);
