@@ -201,8 +201,6 @@
 <script src="../js/db.js"></script>
 <script src="admin.js"></script>
 <script>
-  (async () => {
-  if (!await adminGuard()) return;
 
   let revenueChart = null;
   let analyticsData = null;
@@ -354,6 +352,10 @@
     toast('CSV downloaded!', 'success');
   }
 
+
+  // Guard + initial load
+  (async () => {
+    if (!await adminGuard()) return;
   await loadDashboard();
   })();
 </script>
