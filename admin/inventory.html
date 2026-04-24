@@ -214,9 +214,7 @@
 <script src="../js/db.js"></script>
 <script src="admin.js"></script>
 <script>
-  (async () => {
-  if (!await adminGuard()) return;
-
+  // Global state — accessible by onclick handlers
   let allProducts = [], currentTab = 'all';
   let mannequinFile = null, originalFile = null;
   let existingMannequinUrl = null, existingOriginalUrl = null;
@@ -351,9 +349,6 @@
   function closePanel() { document.getElementById('slide-panel').classList.remove('open'); document.getElementById('panel-overlay').classList.remove('show'); }
 
   // File binding
-  bindUploadZone('mannequin-zone','mannequin-file', file => { mannequinFile=file; showPreview(file,'mannequin-preview-img','mannequin-preview'); });
-  bindUploadZone('original-zone', 'original-file',  file => { originalFile=file;  showPreview(file,'original-preview-img','original-preview'); });
-
   function clearUpload(type) {
     if (type==='mannequin') { mannequinFile=null; existingMannequinUrl=null; document.getElementById('mannequin-file').value=''; document.getElementById('mannequin-preview').style.display='none'; }
     if (type==='original')  { originalFile=null;  existingOriginalUrl=null;  document.getElementById('original-file').value='';  document.getElementById('original-preview').style.display='none'; }
@@ -423,7 +418,12 @@
     toast('Exported!','success');
   }
 
-  await load();
+  // Guard + initial load
+  (async () => {
+    if (!await adminGuard()) return;
+    bindUploadZone('mannequin-zone','mannequin-file', file => { mannequinFile=file; showPreview(file,'mannequin-preview-img','mannequin-preview'); });
+    bindUploadZone('original-zone', 'original-file',  file => { originalFile=file;  showPreview(file,'original-preview-img','original-preview'); });
+    await load();
   })();
 </script>
 </body>
