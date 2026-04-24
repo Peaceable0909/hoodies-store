@@ -7,10 +7,6 @@ const CONFIG = {
   SUPABASE_URL:      "https://tssmlgwuzlvaroucunbr.supabase.co",
   SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzc21sZ3d1emx2YXJvdWN1bmJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MDYxMjYsImV4cCI6MjA5MjE4MjEyNn0._Yn9zm3qVZN_A_v25HdKgUWRg90Y9BiLl4zV67yu3Ew",
 
-  // Admin service key — bypasses RLS for admin operations ONLY
-  // Never use this on public-facing pages
-  SUPABASE_SERVICE_KEY: "HEREEEEEEEEEEEEEEEEER",
-
   // Switch to live key when ready: FLWPUBK-59b3f035001471921a4601a258625a3f-X
   FLW_PUBLIC_KEY:    "FLWPUBK_TEST-afcc1c6ccfcbf26f90c285df1f524ce9-X",
 
@@ -32,19 +28,12 @@ function fmtPrice(ngn, cur) {
   return cur === "USD" ? "$" + (ngn / CONFIG.USD_TO_NGN).toFixed(2) : "₦" + ngn.toLocaleString();
 }
 
-// ── SUPABASE CLIENTS ──────────────────────────────────────────
-// Public client — used on all storefront pages (respects RLS)
+// ── SUPABASE CLIENT ──────────────────────────────────────────
+// One client using the anon key — RLS handles security via auth session
 let _sb = null;
 function getSB() {
   if (!_sb) _sb = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
   return _sb;
-}
-
-// Admin client — bypasses RLS, use ONLY in /admin/ pages
-let _adminSb = null;
-function getAdminSB() {
-  if (!_adminSb) _adminSb = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_SERVICE_KEY);
-  return _adminSb;
 }
 
 // ── AUTH HELPERS ─────────────────────────────────────────────
