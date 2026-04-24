@@ -112,8 +112,6 @@
 <script src="../js/db.js"></script>
 <script src="admin.js"></script>
 <script>
-  (async () => {
-  if (!await adminGuard()) return;
 
   let allOrders = [], currentTab = 'all', currentPage = 1;
   const PER_PAGE = 10;
@@ -308,6 +306,10 @@
     toast('Exported!','success');
   }
 
+
+  // Guard + initial load
+  (async () => {
+    if (!await adminGuard()) return;
   await load();
   })();
 </script>
