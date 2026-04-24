@@ -112,7 +112,7 @@
 <script src="../js/db.js"></script>
 <script src="admin.js"></script>
 <script>
-  if (!adminGuard()) throw new Error('Unauthorized');
+  if (!await adminGuard()) throw new Error('Unauthorized');
 
   let allOrders = [], currentTab = 'all', currentPage = 1;
   const PER_PAGE = 10;
