@@ -29,7 +29,7 @@ function fmtPrice(ngn, cur) {
 }
 
 // ── SUPABASE CLIENT ──────────────────────────────────────────
-// One client — session persisted in localStorage so it survives page navigation
+// One client using the anon key — RLS handles security via auth session
 let _sb = null;
 function getSB() {
   if (!_sb) _sb = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY, {
