@@ -1,11 +1,4 @@
-# HOODIES KINETIC ATELIER — COMPLETE SETUP GUIDE
 
-## Your Credentials (saved for reference)
-- Supabase URL: https://tssmlgwuzlvaroucunbr.supabase.co
-- Flutterwave: TEST keys active (switch to LIVE when ready)
-- WhatsApp: 08024100995
-- Admin password: Peaceable@Son
-- Admin URL: yoursite.com/admin/login.html
 
 ---
 
