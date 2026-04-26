@@ -59,7 +59,7 @@ create policy "products_insert" on products
   for insert to authenticated with check (true);             -- admin only
 
 create policy "products_update" on products
-  for update to authenticated using (true);                  -- admin only
+  for update to authenticated using (true) with check (true); -- admin only
 
 create policy "products_delete" on products
   for delete to authenticated using (true);                  -- admin only
@@ -76,7 +76,7 @@ create policy "orders_select" on orders
   for select to authenticated using (true);                  -- admin only
 
 create policy "orders_update" on orders
-  for update to authenticated using (true);                  -- admin only
+  for update to authenticated using (true) with check (true); -- admin only
 
 -- ============================================================
 --  CUSTOMERS
@@ -90,7 +90,7 @@ create policy "customers_select" on customers
   for select to authenticated using (true);                  -- admin only
 
 create policy "customers_update" on customers
-  for update to authenticated using (true);                  -- admin only
+  for update to authenticated using (true) with check (true); -- admin only
 
 -- ============================================================
 --  CLOSET (saved/wishlist items)
@@ -117,7 +117,7 @@ create policy "design_select" on design_requests
   for select to authenticated using (true);                  -- admin only
 
 create policy "design_update" on design_requests
-  for update to authenticated using (true);                  -- admin only
+  for update to authenticated using (true) with check (true); -- admin only
 
 -- ============================================================
 --  STORAGE — products bucket
