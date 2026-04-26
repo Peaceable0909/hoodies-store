@@ -64,13 +64,22 @@ function closePanel() {
 
 // Upload image to Supabase Storage — uses authenticated session
 async function adminUploadImage(file, bucket, folder) {
-  const ext  = file.name.split('.').pop();
+  const ext  = file.name.split('.').pop().toLowerCase();
   const name = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
   const sb   = getSB();
-  const { error } = await sb.storage.from(bucket).upload(name, file, { cacheControl: '3600', upsert: false, contentType: file.type });
-  if (error) throw error;
-  const { data } = sb.storage.from(bucket).getPublicUrl(name);
-  return data.publicUrl;
+
+  // Detect content type from extension if browser didn't set it
+  const mimeMap = { jpg:'image/jpeg', jpeg:'image/jpeg', png:'image/png', webp:'image/webp', gif:'image/gif', avif:'image/avif' };
+  const contentType = file.type || mimeMap[ext] || 'image/jpeg';
+
+  const { data, error } = await sb.storage.from(bucket).upload(name, file, {
+    cacheControl: '3600',
+    upsert: true,          // overwrite if same name exists
+    contentType,
+  });
+  if (error) throw new Error(`Image upload failed: ${error.message}`);
+  const { data: urlData } = sb.storage.from(bucket).getPublicUrl(name);
+  return urlData.publicUrl;
 }
 
 // Bind drag-over effect to upload zones
