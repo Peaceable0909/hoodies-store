@@ -370,8 +370,16 @@
       let mannequinUrl = existingMannequinUrl;
       let originalUrl  = existingOriginalUrl;
 
-      if (mannequinFile) { upStatus.textContent='Uploading mannequin image...'; mannequinUrl = await adminUploadImage(mannequinFile,'product-images','mannequins'); }
-      if (originalFile)  { upStatus.textContent='Uploading original image...';  originalUrl  = await adminUploadImage(originalFile, 'product-images','originals'); }
+      if (mannequinFile) {
+        upStatus.textContent='Uploading mannequin image...';
+        try { mannequinUrl = await adminUploadImage(mannequinFile,'product-images','mannequins'); }
+        catch(uploadErr) { throw new Error('Mannequin upload failed: ' + uploadErr.message); }
+      }
+      if (originalFile) {
+        upStatus.textContent='Uploading original image...';
+        try { originalUrl = await adminUploadImage(originalFile,'product-images','originals'); }
+        catch(uploadErr) { throw new Error('Original upload failed: ' + uploadErr.message); }
+      }
 
       upStatus.textContent='Saving product...';
 
