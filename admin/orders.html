@@ -190,7 +190,10 @@
                     </span>
                   </div>
                 </td>
-                <td style="font-weight:700;color:var(--purple-dark)">${fmt(o.total_ngn)}</td>
+                <td>
+                  <div style="font-weight:700;color:var(--purple-dark)">${fmt(o.total_ngn)}</div>
+                  ${o.shipping_zone ? `<div style="font-size:0.7rem;color:var(--gray);margin-top:2px">${{lagos:'🇳🇬 Lagos',nigeria:'🇳🇬 Nigeria',africa:'🌍 W.Africa',international:'✈️ DHL'}[o.shipping_zone]||o.shipping_zone} +${fmt(o.shipping_cost||0)}</div>` : ''}
+                </td>
                 <td>
                   <select class="form-select" style="width:130px;font-size:0.72rem;padding:0.35rem 0.6rem;border-radius:6px" onchange="updateStatus('${o.id}',this.value)">
                     <option value="paid"        ${o.status==='paid'?'selected':''}>Paid</option>
@@ -262,6 +265,7 @@
         <div style="background:var(--purple-pale);border-radius:8px;padding:1rem">
           <div style="font-size:0.65rem;font-weight:700;letter-spacing:1px;color:var(--gray);margin-bottom:0.5rem">DELIVERY</div>
           <div style="font-size:0.82rem;line-height:1.6">${o.customer_address||'—'}</div>
+          ${o.shipping_zone ? `<div style="font-size:0.7rem;margin-top:0.4rem"><span style="background:var(--purple);color:white;border-radius:4px;padding:2px 6px;font-size:0.65rem">${{lagos:'🇳🇬 Lagos',nigeria:'🇳🇬 Nigeria',africa:'🌍 West Africa',international:'✈️ DHL International'}[o.shipping_zone]||o.shipping_zone}</span></div>` : ''}
         </div>
         <div style="background:var(--purple-pale);border-radius:8px;padding:1rem">
           <div style="font-size:0.65rem;font-weight:700;letter-spacing:1px;color:var(--gray);margin-bottom:0.3rem">TOTAL</div>
@@ -287,10 +291,34 @@
           </div>
           <div style="font-weight:700;font-size:0.88rem">${fmt(item.subtotal_ngn||item.price_ngn*item.qty)}</div>
         </div>`).join('')}
-      <div style="display:flex;gap:0.75rem;margin-top:1.5rem">
+      <div style="background:var(--purple-pale);border-radius:8px;padding:1rem;margin-top:1rem">
+        <div style="font-size:0.65rem;font-weight:700;letter-spacing:1px;color:var(--gray);margin-bottom:0.6rem">TRACKING</div>
+        <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem">
+          <select class="form-select" id="modal-courier" style="width:140px;font-size:0.78rem;padding:0.3rem 0.5rem">
+            <option value="">— Courier —</option>
+            <option value="GIG">GIG Logistics</option>
+            <option value="DHL">DHL</option>
+            <option value="FedEx">FedEx</option>
+            <option value="UPS">UPS</option>
+            <option value="Kwik">Kwik Delivery</option>
+            <option value="Sendbox">Sendbox</option>
+            <option value="Other">Other</option>
+          </select>
+          <input type="text" class="form-input" id="modal-tracking" placeholder="Tracking number" style="flex:1;font-size:0.78rem;padding:0.3rem 0.7rem"/>
+          <button class="btn btn-purple btn-sm" onclick="saveTracking()">Save</button>
+        </div>
+        <div id="current-tracking" style="font-size:0.75rem;color:var(--gray)"></div>
+      </div>
+      <div style="display:flex;gap:0.75rem;margin-top:1rem">
         <a href="https://wa.me/${CONFIG.WHATSAPP}" target="_blank" class="btn btn-green btn-sm" style="background:var(--green);color:white">WhatsApp Customer</a>
         <a href="mailto:${o.customer_email}?subject=Your HOODIES Order ${o.reference}" class="btn btn-ghost btn-sm">Email Customer</a>
       </div>`;
+    // Store for tracking save
+    document.getElementById('order-modal').dataset.orderId = o.id;
+    document.getElementById('modal-courier').value   = o.courier || '';
+    document.getElementById('modal-tracking').value  = o.tracking_number || '';
+    document.getElementById('current-tracking').textContent =
+      o.tracking_number ? `Current: ${o.courier||''} — ${o.tracking_number}` : 'No tracking number yet.';
     document.getElementById('order-modal').classList.add('show');
   }
 
@@ -306,6 +334,22 @@
     toast('Exported!','success');
   }
 
+
+  async function saveTracking() {
+    const id       = document.getElementById('order-modal').dataset.orderId;
+    const courier  = document.getElementById('modal-courier').value;
+    const tracking = document.getElementById('modal-tracking').value.trim();
+    if (!tracking) { toast('Enter a tracking number first', 'error'); return; }
+    try {
+      const { error } = await getSB().from('orders').update({ courier, tracking_number: tracking, status: 'shipped', updated_at: new Date().toISOString() }).eq('id', id);
+      if (error) throw error;
+      const o = allOrders.find(x => x.id === id);
+      if (o) { o.courier = courier; o.tracking_number = tracking; o.status = 'shipped'; }
+      document.getElementById('current-tracking').textContent = `Saved: ${courier} — ${tracking}`;
+      toast('Tracking saved and status set to Shipped!', 'success');
+      render();
+    } catch(e) { toast('Save failed: ' + e.message, 'error'); }
+  }
 
   // Guard + initial load
   (async () => {
