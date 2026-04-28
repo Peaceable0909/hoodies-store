@@ -6,6 +6,21 @@
   <title>Checkout — HOODIES</title>
   <link rel="stylesheet" href="css/style.css"/>
   <script src="https://checkout.flutterwave.com/v3.js"></script>
+  <style>
+    .shipping-zones { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1.5rem; }
+    .zone-card { border:1.5px solid var(--border); border-radius:10px; padding:0.9rem 1rem; cursor:pointer; transition:all .15s; }
+    .zone-card:hover { border-color:var(--purple); }
+    .zone-card.selected { border-color:var(--purple); background:var(--purple-pale); }
+    .zone-card input[type=radio] { display:none; }
+    .zone-name { font-weight:700; font-size:0.85rem; margin-bottom:0.2rem; }
+    .zone-desc { font-size:0.72rem; color:var(--gray); line-height:1.5; }
+    .zone-price { font-weight:800; font-size:0.9rem; color:var(--purple-dark); margin-top:0.4rem; }
+    .zone-eta  { font-size:0.7rem; color:var(--gray); margin-top:0.1rem; }
+    .state-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1rem; }
+    .country-select-wrap { margin-bottom:1rem; }
+    #nigeria-states { display:none; }
+    #intl-country   { display:none; }
+  </style>
 </head>
 <body>
 
@@ -23,25 +38,134 @@
   <div class="checkout-form-col">
     <h1>Checkout</h1>
     <p class="secure-note">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
       Secure transaction — Flutterwave
     </p>
 
+    <!-- STEP 1: CONTACT -->
     <div class="form-step" style="margin-bottom:2rem">
-      <div class="step-header"><span class="step-circle">1</span> SHIPPING INFORMATION</div>
+      <div class="step-header"><span class="step-circle">1</span> CONTACT INFORMATION</div>
       <div class="form-row-2c" style="margin-bottom:1rem">
-        <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-input" id="name" placeholder="John Doe"/></div>
-        <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="email" placeholder="john@email.com"/></div>
+        <div class="form-group"><label class="form-label">Full Name *</label><input type="text" class="form-input" id="name" placeholder="John Doe"/></div>
+        <div class="form-group"><label class="form-label">Email *</label><input type="email" class="form-input" id="email" placeholder="john@email.com"/></div>
       </div>
-      <div class="form-group" style="margin-bottom:1rem"><label class="form-label">Delivery Address</label><input type="text" class="form-input" id="address" placeholder="123 Main Street, Lagos"/></div>
-      <div class="form-row-2c">
-        <div class="form-group"><label class="form-label">City</label><input type="text" class="form-input" id="city" placeholder="Lagos"/></div>
-        <div class="form-group"><label class="form-label">Phone</label><input type="tel" class="form-input" id="phone" placeholder="+234 800 000 0000"/></div>
+      <div class="form-group"><label class="form-label">Phone *</label><input type="tel" class="form-input" id="phone" placeholder="+234 800 000 0000"/></div>
+    </div>
+
+    <!-- STEP 2: SHIPPING ZONE -->
+    <div class="form-step" style="margin-bottom:2rem">
+      <div class="step-header"><span class="step-circle">2</span> SHIPPING ZONE</div>
+      <div class="shipping-zones" id="zone-cards">
+
+        <label class="zone-card selected" id="zone-lagos-label">
+          <input type="radio" name="zone" value="lagos" checked onchange="selectZone('lagos')"/>
+          <div class="zone-name">🇳🇬 Lagos</div>
+          <div class="zone-desc">Lagos State only</div>
+          <div class="zone-price" id="price-lagos">₦2,500</div>
+          <div class="zone-eta">2 – 3 business days</div>
+        </label>
+
+        <label class="zone-card" id="zone-nigeria-label">
+          <input type="radio" name="zone" value="nigeria" onchange="selectZone('nigeria')"/>
+          <div class="zone-name">🇳🇬 Other Nigeria</div>
+          <div class="zone-desc">All other Nigerian states</div>
+          <div class="zone-price" id="price-nigeria">₦4,000</div>
+          <div class="zone-eta">3 – 7 business days</div>
+        </label>
+
+        <label class="zone-card" id="zone-africa-label">
+          <input type="radio" name="zone" value="africa" onchange="selectZone('africa')"/>
+          <div class="zone-name">🌍 West Africa</div>
+          <div class="zone-desc">Ghana, Senegal, Côte d'Ivoire & more</div>
+          <div class="zone-price" id="price-africa">₦12,000</div>
+          <div class="zone-eta">7 – 14 business days</div>
+        </label>
+
+        <label class="zone-card" id="zone-international-label">
+          <input type="radio" name="zone" value="international" onchange="selectZone('international')"/>
+          <div class="zone-name">✈️ International (DHL)</div>
+          <div class="zone-desc">USA, UK, Europe, Asia & worldwide</div>
+          <div class="zone-price" id="price-international">₦35,000</div>
+          <div class="zone-eta">5 – 10 business days via DHL</div>
+        </label>
+
       </div>
     </div>
 
+    <!-- STEP 3: DELIVERY ADDRESS -->
+    <div class="form-step" style="margin-bottom:2rem">
+      <div class="step-header"><span class="step-circle">3</span> DELIVERY ADDRESS</div>
+
+      <!-- Nigeria: state picker -->
+      <div id="nigeria-states">
+        <div class="form-group" style="margin-bottom:1rem">
+          <label class="form-label">State *</label>
+          <select class="form-select form-input" id="ng-state" onchange="updateOrderSummary()">
+            <option value="">— Select state —</option>
+            <option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option>
+            <option>Anambra</option><option>Bauchi</option><option>Bayelsa</option>
+            <option>Benue</option><option>Borno</option><option>Cross River</option>
+            <option>Delta</option><option>Ebonyi</option><option>Edo</option>
+            <option>Ekiti</option><option>Enugu</option><option>FCT — Abuja</option>
+            <option>Gombe</option><option>Imo</option><option>Jigawa</option>
+            <option>Kaduna</option><option>Kano</option><option>Katsina</option>
+            <option>Kebbi</option><option>Kogi</option><option>Kwara</option>
+            <option>Lagos</option><option>Nasarawa</option><option>Niger</option>
+            <option>Ogun</option><option>Ondo</option><option>Osun</option>
+            <option>Oyo</option><option>Plateau</option><option>Rivers</option>
+            <option>Sokoto</option><option>Taraba</option><option>Yobe</option>
+            <option>Zamfara</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- International: country picker -->
+      <div id="intl-country">
+        <div class="form-group" style="margin-bottom:1rem">
+          <label class="form-label">Country *</label>
+          <select class="form-select form-input" id="int-country" onchange="updateOrderSummary()">
+            <option value="">— Select country —</option>
+            <!-- West Africa -->
+            <optgroup label="West Africa">
+              <option>Ghana</option><option>Senegal</option><option>Côte d'Ivoire</option>
+              <option>Cameroon</option><option>Benin</option><option>Togo</option>
+              <option>Sierra Leone</option><option>Liberia</option><option>Guinea</option>
+            </optgroup>
+            <!-- International -->
+            <optgroup label="International">
+              <option>United States</option><option>United Kingdom</option>
+              <option>Canada</option><option>Germany</option><option>France</option>
+              <option>Netherlands</option><option>Italy</option><option>Spain</option>
+              <option>Australia</option><option>UAE</option><option>Saudi Arabia</option>
+              <option>South Africa</option><option>Kenya</option><option>Other</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:1rem">
+        <label class="form-label">Street Address *</label>
+        <input type="text" class="form-input" id="address" placeholder="123 Main Street, Victoria Island"/>
+      </div>
+      <div class="state-grid">
+        <div class="form-group">
+          <label class="form-label">City *</label>
+          <input type="text" class="form-input" id="city" placeholder="Lagos"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Postal Code</label>
+          <input type="text" class="form-input" id="postal" placeholder="100001"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Delivery Notes <span style="color:var(--gray);font-weight:400">(optional)</span></label>
+        <input type="text" class="form-input" id="notes" placeholder="Landmark, gate code, building name..."/>
+      </div>
+    </div>
+
+    <!-- STEP 4: PAYMENT -->
     <div class="form-step">
-      <div class="step-header"><span class="step-circle">2</span> PAYMENT</div>
+      <div class="step-header"><span class="step-circle">4</span> PAYMENT</div>
       <div style="border:1px solid var(--border);border-radius:10px;padding:1.2rem;display:flex;align-items:flex-start;gap:1rem;background:var(--purple-pale)">
         <div style="width:18px;height:18px;border-radius:50%;border:2px solid var(--purple);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">
           <div style="width:8px;height:8px;background:var(--purple);border-radius:50%"></div>
@@ -58,6 +182,7 @@
     <p style="text-align:center;font-size:0.72rem;color:var(--gray);margin-top:0.8rem">We never store your card details.</p>
   </div>
 
+  <!-- ORDER SUMMARY -->
   <div class="checkout-order-col">
     <h3>ORDER SUMMARY</h3>
     <div id="order-lines"></div>
@@ -79,36 +204,97 @@
 
   if (!cart.length) window.location.href = 'cart.html';
 
-  let total = 0;
+  // ── SHIPPING ZONES ────────────────────────────────────────────
+  const ZONES = {
+    lagos:         { cost: 2500,  label: 'Lagos delivery',          eta: '2–3 business days' },
+    nigeria:       { cost: 4000,  label: 'Nigeria delivery',        eta: '3–7 business days' },
+    africa:        { cost: 12000, label: 'West Africa shipping',     eta: '7–14 business days' },
+    international: { cost: 35000, label: 'International DHL',       eta: '5–10 business days' },
+  };
+
+  let currentZone = 'lagos';
+
+  function selectZone(zone) {
+    currentZone = zone;
+    document.querySelectorAll('.zone-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('zone-' + zone + '-label').classList.add('selected');
+
+    // Show/hide address extras
+    document.getElementById('nigeria-states').style.display =
+      (zone === 'lagos' || zone === 'nigeria') ? 'block' : 'none';
+    document.getElementById('intl-country').style.display =
+      (zone === 'africa' || zone === 'international') ? 'block' : 'none';
+
+    updateOrderSummary();
+  }
+
+  function getShippingCost() { return ZONES[currentZone].cost; }
+
+  // ── ORDER SUMMARY ─────────────────────────────────────────────
+  let subtotal = 0;
   document.getElementById('order-lines').innerHTML = cart.map(item => {
-    total += item.subtotal_ngn;
+    subtotal += item.subtotal_ngn;
     return `<div class="order-line">
-      <div class="order-line-img">${item.image_url?`<img src="${item.image_url}" alt="${item.name}"/>`:'<div style="width:100%;height:100%;background:var(--purple-pale)"></div>'}</div>
-      <div class="order-line-info"><strong>${item.name}</strong><span>Size: ${item.size||'—'} | Qty: ${item.qty}</span></div>
+      <div class="order-line-img">${item.image_url ? `<img src="${item.image_url}" alt="${item.name}"/>` : '<div style="width:100%;height:100%;background:var(--purple-pale)"></div>'}</div>
+      <div class="order-line-info"><strong>${item.name}</strong><span>Size: ${item.size || '—'} | Qty: ${item.qty}</span></div>
       <span class="order-line-price">${fmtPrice(item.subtotal_ngn, cur)}</span>
     </div>`;
   }).join('');
 
-  document.getElementById('order-totals').innerHTML = `
-    <div style="margin-top:1rem">
-      <div class="summary-row"><span>Subtotal</span><span>${fmtPrice(total, cur)}</span></div>
-      <div class="summary-row"><span>Shipping</span><span>Free</span></div>
-      <div class="summary-row total"><span>TOTAL</span><span>${fmtPrice(total, cur)}</span></div>
-    </div>`;
+  function updateOrderSummary() {
+    const shipping = getShippingCost();
+    const zone     = ZONES[currentZone];
+    const total    = subtotal + shipping;
+    document.getElementById('order-totals').innerHTML = `
+      <div style="margin-top:1rem">
+        <div class="summary-row"><span>Subtotal</span><span>${fmtPrice(subtotal, cur)}</span></div>
+        <div class="summary-row">
+          <span>Shipping <span style="font-size:0.7rem;color:var(--gray)">(${zone.eta})</span></span>
+          <span style="color:var(--purple-dark);font-weight:700">${fmtPrice(shipping, cur)}</span>
+        </div>
+        <div class="summary-row total"><span>TOTAL</span><span>${fmtPrice(total, cur)}</span></div>
+      </div>`;
+  }
 
+  // Init zone display + summary
+  selectZone('lagos');
+
+  // ── PAY ───────────────────────────────────────────────────────
   document.getElementById('pay-btn').addEventListener('click', () => {
     const name    = sanitize(document.getElementById('name').value.trim());
     const email   = document.getElementById('email').value.trim();
     const phone   = document.getElementById('phone').value.trim();
     const address = sanitize(document.getElementById('address').value.trim());
     const city    = sanitize(document.getElementById('city').value.trim());
+    const postal  = sanitize(document.getElementById('postal').value.trim());
+    const notes   = sanitize(document.getElementById('notes').value.trim());
+    const ngState = document.getElementById('ng-state').value;
+    const intlCty = document.getElementById('int-country').value;
     const errEl   = document.getElementById('form-error');
 
-    if (!name || !email || !phone || !address || !city) { errEl.textContent='Please fill all fields.'; errEl.style.display='block'; return; }
-    if (!isValidEmail(email)) { errEl.textContent='Please enter a valid email.'; errEl.style.display='block'; return; }
+    // Validation
+    if (!name || !email || !phone || !address || !city) {
+      errEl.textContent = 'Please fill all required fields.'; errEl.style.display = 'block'; return;
+    }
+    if (!isValidEmail(email)) {
+      errEl.textContent = 'Please enter a valid email.'; errEl.style.display = 'block'; return;
+    }
+    if ((currentZone === 'lagos' || currentZone === 'nigeria') && !ngState) {
+      errEl.textContent = 'Please select your state.'; errEl.style.display = 'block'; return;
+    }
+    if ((currentZone === 'africa' || currentZone === 'international') && !intlCty) {
+      errEl.textContent = 'Please select your country.'; errEl.style.display = 'block'; return;
+    }
     errEl.style.display = 'none';
 
-    const txRef = 'HKA-' + Date.now();
+    const shipping = getShippingCost();
+    const total    = subtotal + shipping;
+    const txRef    = 'HKA-' + Date.now();
+
+    // Build full address string
+    const stateOrCountry = ngState || intlCty || '';
+    const fullAddress = [address, city, postal, stateOrCountry].filter(Boolean).join(', ');
+    const deliveryNotes = notes ? ` — Notes: ${notes}` : '';
 
     FlutterwaveCheckout({
       public_key:      CONFIG.FLW_PUBLIC_KEY,
@@ -117,15 +303,32 @@
       currency:        'NGN',
       payment_options: CONFIG.PAYMENT_OPTIONS,
       customer:        { email, phone_number: phone, name },
-      customizations:  { title: 'HOODIES', description: `Custom order — ${cart.length} item(s)` },
+      customizations:  { title: 'HOODIES', description: `Order — ${cart.length} item(s) + ${ZONES[currentZone].label}` },
       callback: async (response) => {
         if (response.status === 'successful' || response.status === 'completed') {
-          const order = { reference: txRef, transaction_id: String(response.transaction_id), customer_name: name, customer_email: email, customer_phone: phone, customer_address: `${address}, ${city}`, items: cart, total_ngn: total, status: 'paid', created_at: new Date().toISOString() };
+          const order = {
+            reference:        txRef,
+            transaction_id:   String(response.transaction_id),
+            customer_name:    name,
+            customer_email:   email,
+            customer_phone:   phone,
+            customer_address: fullAddress + deliveryNotes,
+            shipping_zone:    currentZone,
+            shipping_cost:    shipping,
+            shipping_state:   ngState || null,
+            shipping_country: intlCty || (currentZone === 'lagos' || currentZone === 'nigeria' ? 'Nigeria' : null),
+            items:            cart,
+            total_ngn:        total,
+            status:           'paid',
+            created_at:       new Date().toISOString(),
+          };
           try { await dbSaveOrder(order); } catch(e) { console.warn('Order save warning:', e); }
           clearCart();
           try { waOrder(order); } catch(e) {}
           window.location.href = `success.html?ref=${txRef}&name=${encodeURIComponent(name)}`;
-        } else { alert('Payment was not completed. Please try again.'); }
+        } else {
+          alert('Payment was not completed. Please try again.');
+        }
       },
       onclose: () => {}
     });
