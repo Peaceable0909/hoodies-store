@@ -325,6 +325,14 @@
           try { await dbSaveOrder(order); } catch(e) { console.warn('Order save warning:', e); }
           clearCart();
           try { waOrder(order); } catch(e) {}
+
+          // Send confirmation emails (fire and forget — don't block redirect)
+          fetch(`${CONFIG.SUPABASE_URL}/functions/v1/send-email`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json', 'apikey': CONFIG.SUPABASE_ANON_KEY },
+            body:    JSON.stringify(order),
+          }).catch(e => console.warn('Email send warning:', e));
+
           window.location.href = `success.html?ref=${txRef}&name=${encodeURIComponent(name)}`;
         } else {
           alert('Payment was not completed. Please try again.');
